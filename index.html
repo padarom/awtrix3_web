@@ -1,103 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AWTRIX 3 Interface</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>AWTRIX 3</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <h1 class="logo">AWTRIX 3</h1>
-        </header>
-
-        <nav class="nav-tabs">
-            <button class="nav-tab active" data-tab="wifi">WiFi Settings</button>
-            <button class="nav-tab" data-tab="mqtt">MQTT Settings</button>
-            <button class="nav-tab" data-tab="time">Time Settings</button>
+    <div class="sidebar">
+        <h1 class="logo">AWTRIX 3</h1>
+        <nav>
+            <div class="nav-item active" data-page="mqtt">MQTT Einstellungen</div>
+            <div class="nav-item" data-page="status">Status</div>
         </nav>
-
-        <main>
-            <section id="wifi" class="content-section active">
-                <h2>WiFi Configuration</h2>
-                <div class="form-group">
-                    <button class="btn" id="scanWifi">Scan for Networks</button>
-                </div>
-                <div class="wifi-list" id="wifiList"></div>
-                <form id="wifiForm">
-                    <div class="form-group">
-                        <label for="ssid">Network SSID</label>
-                        <input type="text" id="ssid" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" class="form-control" required>
-                    </div>
-                    <button type="submit" class="btn">Connect</button>
-                </form>
-            </section>
-
-            <section id="mqtt" class="content-section">
-                <h2>MQTT Settings</h2>
-                <form id="mqttForm">
-                    <div class="form-group">
-                        <label for="broker">Broker Address</label>
-                        <input type="text" id="broker" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="port">Port</label>
-                        <input type="number" id="port" class="form-control" value="1883" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="mqttUser">Username (optional)</label>
-                        <input type="text" id="mqttUser" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label for="mqttPass">Password (optional)</label>
-                        <input type="password" id="mqttPass" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label for="topic">Base Topic</label>
-                        <input type="text" id="topic" class="form-control" value="awtrix" required>
-                    </div>
-                    <button type="submit" class="btn">Save MQTT Settings</button>
-                </form>
-            </section>
-
-            <section id="time" class="content-section">
-                <h2>Time Settings</h2>
-                <form id="timeForm">
-                    <div class="form-group">
-                        <label for="timezone">Timezone</label>
-                        <select id="timezone" class="form-control" required>
-                            <option value="UTC">UTC</option>
-                            <option value="Europe/London">Europe/London</option>
-                            <option value="Europe/Berlin">Europe/Berlin</option>
-                            <option value="Europe/Paris">Europe/Paris</option>
-                            <option value="America/New_York">America/New_York</option>
-                            <option value="America/Los_Angeles">America/Los_Angeles</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="ntpServer">NTP Server</label>
-                        <input type="text" id="ntpServer" class="form-control" value="pool.ntp.org" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="timeFormat">Time Format</label>
-                        <select id="timeFormat" class="form-control" required>
-                            <option value="24">24-hour</option>
-                            <option value="12">12-hour</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn">Save Time Settings</button>
-                </form>
-            </section>
-        </main>
     </div>
 
-    <div id="toast" class="toast"></div>
-    
-    <script src="script.js"></script>
+    <main class="main-content">
+        <div id="mqtt-page">
+            <h2 class="section-title">MQTT Einstellungen</h2>
+            <form id="mqtt-form">
+                <div class="form-group">
+                    <label class="form-label">MQTT Broker</label>
+                    <input type="text" class="form-input" id="mqtt-broker" placeholder="broker.example.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Port</label>
+                    <input type="number" class="form-input" id="mqtt-port" placeholder="1883">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Benutzername</label>
+                    <input type="text" class="form-input" id="mqtt-username">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Passwort</label>
+                    <input type="password" class="form-input" id="mqtt-password">
+                </div>
+                <button type="submit" class="btn btn-primary">Speichern</button>
+            </form>
+        </div>
+
+        <div id="status-page" style="display: none;">
+            <h2 class="section-title">System Status</h2>
+            <div class="status-grid" id="status-grid">
+                <!-- Status cards will be inserted here by JavaScript -->
+            </div>
+        </div>
+    </main>
+
+    <script src="main.js"></script>
 </body>
 </html>
