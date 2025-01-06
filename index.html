@@ -1,101 +1,401 @@
 <!DOCTYPE html>
-<html lang="de" class="h-full bg-gray-900">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AWTRIX 3</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        'awtrix': {
-                            primary: '#00ff88',
-                            secondary: '#00ffcc',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    <title>System Einstellungen</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.29.0/feather.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/script.js" defer></script>
 </head>
-<body class="h-full">
-    <div class="min-h-full">
-        <!-- Sidebar -->
-        <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-            <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-800/30 backdrop-blur-xl px-6 pb-4 border-r border-gray-700/50">
-                <div class="flex h-16 shrink-0 items-center">
-                    <h1 class="text-2xl font-bold bg-gradient-to-r from-awtrix-primary to-awtrix-secondary bg-clip-text text-transparent">
-                        AWTRIX 3
-                    </h1>
+<body>
+    <aside class="sidebar">
+        <div class="logo">
+            <i data-feather="settings"></i>
+            System
+        </div>
+        <nav>
+            <a class="nav-item" data-page="wifi">
+                <i data-feather="wifi"></i>
+                WLAN
+            </a>
+            <a class="nav-item" data-page="mqtt">
+                <i data-feather="server"></i>
+                MQTT
+            </a>
+            <a class="nav-item" data-page="time">
+                <i data-feather="clock"></i>
+                Zeit
+            </a>
+            <a class="nav-item" data-page="icons">
+                <i data-feather="image"></i>
+                Icons
+            </a>
+            <a class="nav-item" data-page="settings">
+                <i data-feather="sliders"></i>
+                Einstellungen
+            </a>
+        </nav>
+    </aside>
+
+    <main>
+        <!-- WLAN Einstellungen -->
+        <div id="wifi" class="page">
+            <header class="header">
+                <h1>WLAN Einstellungen</h1>
+            </header>
+            <div class="content-card">
+                <form id="wifiForm">
+                    <div class="form-group">
+                        <label for="ssid">WLAN Name (SSID)</label>
+                        <input type="text" id="ssid" class="form-control" placeholder="Ihr WLAN-Netzwerk" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">WLAN Passwort</label>
+                        <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn">
+                        <i data-feather="save"></i>
+                        Speichern
+                    </button>
+                </form>
+                <div class="connection-status">
+                    <div class="status-badge success">
+                        <i data-feather="check-circle"></i>
+                        Verbunden
+                    </div>
+                    <p class="info-text">Verbunden mit "Mein WLAN" | IP: 192.168.1.100</p>
                 </div>
-                <nav class="flex flex-1 flex-col">
-                    <ul role="list" class="flex flex-1 flex-col gap-y-7">
-                        <li>
-                            <ul role="list" class="-mx-2 space-y-1">
-                                <li>
-                                    <div class="nav-item active group flex gap-x-3 rounded-md p-2 text-sm font-semibold cursor-pointer" data-page="mqtt">
-                                        <svg class="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
-                                        </svg>
-                                        MQTT Einstellungen
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold cursor-pointer" data-page="status">
-                                        <svg class="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
-                                        </svg>
-                                        Status
-                                    </div>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </nav>
             </div>
         </div>
 
-        <!-- Main content -->
-        <main class="lg:pl-72">
-            <div class="px-4 py-8 sm:px-6 lg:px-8">
-                <!-- MQTT Settings Page -->
-                <div id="mqtt-page" class="max-w-xl">
-                    <h2 class="text-2xl font-bold text-white mb-8">MQTT Einstellungen</h2>
-                    <form id="mqtt-form" class="space-y-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400">MQTT Broker</label>
-                            <input type="text" id="mqtt-broker" class="mt-1 block w-full rounded-md border-0 bg-gray-800/50 py-2 px-3 text-white shadow-sm ring-1 ring-inset ring-gray-700 focus:ring-2 focus:ring-awtrix-primary sm:text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400">Port</label>
-                            <input type="number" id="mqtt-port" class="mt-1 block w-full rounded-md border-0 bg-gray-800/50 py-2 px-3 text-white shadow-sm ring-1 ring-inset ring-gray-700 focus:ring-2 focus:ring-awtrix-primary sm:text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400">Benutzername</label>
-                            <input type="text" id="mqtt-username" class="mt-1 block w-full rounded-md border-0 bg-gray-800/50 py-2 px-3 text-white shadow-sm ring-1 ring-inset ring-gray-700 focus:ring-2 focus:ring-awtrix-primary sm:text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400">Passwort</label>
-                            <input type="password" id="mqtt-password" class="mt-1 block w-full rounded-md border-0 bg-gray-800/50 py-2 px-3 text-white shadow-sm ring-1 ring-inset ring-gray-700 focus:ring-2 focus:ring-awtrix-primary sm:text-sm">
-                        </div>
-                        <button type="submit" class="w-full rounded-md bg-gradient-to-r from-awtrix-primary to-awtrix-secondary py-2 px-3 text-sm font-semibold text-gray-900 hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-awtrix-primary">
-                            Speichern
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Status Page -->
-                <div id="status-page" class="hidden">
-                    <h2 class="text-2xl font-bold text-white mb-8">System Status</h2>
-                    <div id="status-grid" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                        <!-- Status cards will be inserted here by JavaScript -->
+        <!-- MQTT Einstellungen -->
+        <div id="mqtt" class="page">
+            <header class="header">
+                <h1>MQTT Einstellungen</h1>
+            </header>
+            <div class="content-card">
+                <form id="mqttForm">
+                    <div class="form-group">
+                        <label for="broker">Broker URL</label>
+                        <input type="text" id="broker" class="form-control" placeholder="mqtt.example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="port">Port</label>
+                        <input type="number" id="port" class="form-control" value="1883" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="mqttUser">Benutzername</label>
+                        <input type="text" id="mqttUser" class="form-control" placeholder="Optional">
+                    </div>
+                    <div class="form-group">
+                        <label for="mqttPassword">Passwort</label>
+                        <input type="password" id="mqttPassword" class="form-control" placeholder="Optional">
+                    </div>
+                    <div class="form-group">
+                        <label for="topic">Topic Prefix</label>
+                        <input type="text" id="topic" class="form-control" placeholder="home/sensors/" required>
+                    </div>
+                    <button type="submit" class="btn">
+                        <i data-feather="save"></i>
+                        Speichern
+                    </button>
+                </form>
+                <div class="connection-status">
+                    <div class="status-badge error">
+                        <i data-feather="x-circle"></i>
+                        Nicht verbunden
                     </div>
                 </div>
             </div>
-        </main>
-    </div>
+        </div>
+
+        <!-- Zeit Einstellungen -->
+        <div id="time" class="page">
+            <header class="header">
+                <h1>Zeit Einstellungen</h1>
+            </header>
+            <div class="content-card">
+                <form id="timeForm">
+                    <div class="form-group">
+                        <label for="timezone">Zeitzone</label>
+                        <select id="timezone" class="form-control" required>
+                            <option value="Europe/Berlin">Berlin (UTC+01:00)</option>
+                            <option value="Europe/London">London (UTC+00:00)</option>
+                            <option value="Europe/Paris">Paris (UTC+01:00)</option>
+                            <option value="Europe/Rome">Rom (UTC+01:00)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ntp">NTP Server</label>
+                        <input type="text" id="ntp" class="form-control" value="pool.ntp.org" required>
+                    </div>
+                    <button type="submit" class="btn">
+                        <i data-feather="save"></i>
+                        Speichern
+                    </button>
+                </form>
+                <div class="connection-status">
+                    <div class="status-badge success">
+                        <i data-feather="check-circle"></i>
+                        Synchronisiert
+                    </div>
+                    <p class="info-text">Letzte Synchronisation: 05.01.2025 14:30:22</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Icon Galerie -->
+        <div id="icons" class="page">
+            <header class="header">
+                <h1>Icon Galerie</h1>
+            </header>
+            
+            <!-- Upload Bereich -->
+            <div class="content-card">
+                <div class="upload-area">
+                    <i data-feather="upload-cloud" class="upload-icon"></i>
+                    <h3>Icons hochladen</h3>
+                    <p>Ziehen Sie Ihre Icons hierher oder</p>
+                    <label for="icon-upload" class="btn">
+                        <i data-feather="plus"></i>
+                        Icons auswählen
+                    </label>
+                    <input type="file" id="icon-upload" multiple accept="image/svg+xml,image/png" hidden>
+                </div>
+            </div>
+
+            <!-- Icon Grid -->
+            <div class="content-card">
+                <div class="icon-header">
+                    <div class="icon-title">
+                        <h3>Ihre Icons</h3>
+                        <span class="icon-count">15 Icons</span>
+                    </div>
+                    <div class="search-box">
+                        <i data-feather="search"></i>
+                        <input type="text" placeholder="Icons suchen..." class="form-control">
+                    </div>
+                </div>
+                <div class="icon-grid">
+                    <!-- Icon Items -->
+                    <div class="icon-item">
+                        <div class="icon-preview">
+                            <i data-feather="home"></i>
+                        </div>
+                        <div class="icon-info">
+                            <span>home.svg</span>
+                            <div class="icon-actions">
+                                <button class="icon-btn" title="Herunterladen">
+                                    <i data-feather="download"></i>
+                                </button>
+                                <button class="icon-btn" title="Löschen">
+                                    <i data-feather="trash-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="icon-item">
+                        <div class="icon-preview">
+                            <i data-feather="settings"></i>
+                        </div>
+                        <div class="icon-info">
+                            <span>settings.svg</span>
+                            <div class="icon-actions">
+                                <button class="icon-btn" title="Herunterladen">
+                                    <i data-feather="download"></i>
+                                </button>
+                                <button class="icon-btn" title="Löschen">
+                                    <i data-feather="trash-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="icon-item">
+                        <div class="icon-preview">
+                            <i data-feather="user"></i>
+                        </div>
+                        <div class="icon-info">
+                            <span>user.svg</span>
+                            <div class="icon-actions">
+                                <button class="icon-btn" title="Herunterladen">
+                                    <i data-feather="download"></i>
+                                </button>
+                                <button class="icon-btn" title="Löschen">
+                                    <i data-feather="trash-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Weitere Icons hier -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings -->
+        <div id="settings" class="page">
+            <header class="header">
+                <h1>System Einstellungen</h1>
+            </header>
+
+            <!-- Basic Settings -->
+            <div class="content-card settings-section">
+                <h2>Grundeinstellungen</h2>
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <label for="hostname">Hostname</label>
+                        <input type="text" id="hostname" class="form-control" value="awtrix-123">
+                        <span class="setting-desc">Hostname für App-Discovery und mDNS</span>
+                    </div>
+                    <div class="setting-item">
+                        <label for="ap_timeout">AP Timeout</label>
+                        <input type="number" id="ap_timeout" class="form-control" value="15">
+                        <span class="setting-desc">Timeout in Sekunden für AP-Modus</span>
+                    </div>
+                    <div class="setting-item">
+                        <label for="bootsound">Boot Sound</label>
+                        <input type="text" id="bootsound" class="form-control" placeholder="Melodie beim Start">
+                        <span class="setting-desc">Eigene Melodie beim Systemstart</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Display Settings -->
+            <div class="content-card settings-section">
+                <h2>Display Einstellungen</h2>
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <label for="matrix">Matrix Layout</label>
+                        <select id="matrix" class="form-control">
+                            <option value="0">Standard (0)</option>
+                            <option value="1">Layout 1</option>
+                            <option value="2">Layout 2</option>
+                        </select>
+                        <span class="setting-desc">Matrix-Anordnung</span>
+                    </div>
+                    <div class="setting-item color-setting">
+                        <label>Farbkorrektur</label>
+                        <div class="color-inputs">
+                            <input type="number" class="form-control" value="255" min="0" max="255">
+                            <input type="number" class="form-control" value="255" min="0" max="255">
+                            <input type="number" class="form-control" value="255" min="0" max="255">
+                        </div>
+                        <span class="setting-desc">RGB Farbkorrektur</span>
+                    </div>
+                    <div class="setting-item">
+                        <label>Bildschirm-Optionen</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="rotate_screen">
+                                <span>Bildschirm rotieren</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="mirror_screen">
+                                <span>Bildschirm spiegeln</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sensor Settings -->
+            <div class="content-card settings-section">
+                <h2>Sensor Einstellungen</h2>
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <label for="temp_dec_places">Dezimalstellen Temperatur</label>
+                        <input type="number" id="temp_dec_places" class="form-control" value="0" min="0" max="3">
+                        <span class="setting-desc">Anzahl der Dezimalstellen</span>
+                    </div>
+                    <div class="setting-item">
+                        <label for="temp_offset">Temperatur Offset</label>
+                        <input type="number" id="temp_offset" class="form-control" value="-9" step="0.1">
+                        <span class="setting-desc">Offset für Temperaturmessung</span>
+                    </div>
+                    <div class="setting-item">
+                        <label for="hum_offset">Luftfeuchtigkeits Offset</label>
+                        <input type="number" id="hum_offset" class="form-control" value="0" step="0.1">
+                        <span class="setting-desc">Offset für Feuchtigkeitsmessung</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Brightness Settings -->
+            <div class="content-card settings-section">
+                <h2>Helligkeits Einstellungen</h2>
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <label for="min_brightness">Minimale Helligkeit</label>
+                        <input type="number" id="min_brightness" class="form-control" value="2" min="0" max="255">
+                        <span class="setting-desc">Minimale Helligkeit für Auto-Brightness</span>
+                    </div>
+                    <div class="setting-item">
+                        <label for="max_brightness">Maximale Helligkeit</label>
+                        <input type="number" id="max_brightness" class="form-control" value="180" min="0" max="255">
+                        <span class="setting-desc">Maximale Helligkeit (Achtung: Überhitzungsgefahr!)</span>
+                    </div>
+                    <div class="setting-item">
+                        <label for="ldr_gamma">LDR Gamma</label>
+                        <input type="number" id="ldr_gamma" class="form-control" value="3.0" step="0.1">
+                        <span class="setting-desc">Gamma-Korrektur für Helligkeitssteuerung</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Settings -->
+            <div class="content-card settings-section">
+                <h2>Weitere Einstellungen</h2>
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <label for="ha_prefix">HomeAssistant Prefix</label>
+                        <input type="text" id="ha_prefix" class="form-control" value="homeassistant">
+                        <span class="setting-desc">Prefix für HomeAssistant Discovery</span>
+                    </div>
+                    <div class="setting-item">
+                        <label for="stats_interval">Statistik Intervall</label>
+                        <input type="number" id="stats_interval" class="form-control" value="10000" step="1000">
+                        <span class="setting-desc">Intervall für Statistik-Updates (ms)</span>
+                    </div>
+                    <div class="setting-item">
+                        <label>Weitere Optionen</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="debug_mode">
+                                <span>Debug Modus</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="dfplayer">
+                                <span>DFPlayer aktivieren</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="new_year">
+                                <span>Neujahrs-Animation</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="swap_buttons">
+                                <span>Tasten tauschen</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-actions">
+                <button class="btn btn-secondary">
+                    <i data-feather="refresh-cw"></i>
+                    Zurücksetzen
+                </button>
+                <button class="btn">
+                    <i data-feather="save"></i>
+                    Speichern
+                </button>
+            </div>
+        </div>
+    </main>
+
+ 
+
+   
 </body>
+
 </html>
