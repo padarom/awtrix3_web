@@ -39,7 +39,13 @@ document.getElementById('mqtt-form').addEventListener('submit', (e) => {
 // Status fetching and display
 async function fetchStatus() {
     try {
-        const response = await fetch('http://192.168.178.111/api/stats');
+        const response = await fetch('/api/stats', {
+            mode: 'no-cors',
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
         const data = await response.json();
         updateStatusDisplay(data);
     } catch (error) {
