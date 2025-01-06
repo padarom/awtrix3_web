@@ -1,52 +1,101 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" class="h-full bg-gray-900">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AWTRIX 3</title>
-    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'awtrix': {
+                            primary: '#00ff88',
+                            secondary: '#00ffcc',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
-    <div class="sidebar">
-        <h1 class="logo">AWTRIX 3</h1>
-        <nav>
-            <div class="nav-item active" data-page="mqtt">MQTT Einstellungen</div>
-            <div class="nav-item" data-page="status">Status</div>
-        </nav>
-    </div>
-
-    <main class="main-content">
-        <div id="mqtt-page">
-            <h2 class="section-title">MQTT Einstellungen</h2>
-            <form id="mqtt-form">
-                <div class="form-group">
-                    <label class="form-label">MQTT Broker</label>
-                    <input type="text" class="form-input" id="mqtt-broker" placeholder="broker.example.com">
+<body class="h-full">
+    <div class="min-h-full">
+        <!-- Sidebar -->
+        <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+            <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-800/30 backdrop-blur-xl px-6 pb-4 border-r border-gray-700/50">
+                <div class="flex h-16 shrink-0 items-center">
+                    <h1 class="text-2xl font-bold bg-gradient-to-r from-awtrix-primary to-awtrix-secondary bg-clip-text text-transparent">
+                        AWTRIX 3
+                    </h1>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Port</label>
-                    <input type="number" class="form-input" id="mqtt-port" placeholder="1883">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Benutzername</label>
-                    <input type="text" class="form-input" id="mqtt-username">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Passwort</label>
-                    <input type="password" class="form-input" id="mqtt-password">
-                </div>
-                <button type="submit" class="btn btn-primary">Speichern</button>
-            </form>
-        </div>
-
-        <div id="status-page" style="display: none;">
-            <h2 class="section-title">System Status</h2>
-            <div class="status-grid" id="status-grid">
-                <!-- Status cards will be inserted here by JavaScript -->
+                <nav class="flex flex-1 flex-col">
+                    <ul role="list" class="flex flex-1 flex-col gap-y-7">
+                        <li>
+                            <ul role="list" class="-mx-2 space-y-1">
+                                <li>
+                                    <div class="nav-item active group flex gap-x-3 rounded-md p-2 text-sm font-semibold cursor-pointer" data-page="mqtt">
+                                        <svg class="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
+                                        </svg>
+                                        MQTT Einstellungen
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold cursor-pointer" data-page="status">
+                                        <svg class="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+                                        </svg>
+                                        Status
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
             </div>
         </div>
-    </main>
 
-    <script src="main.js"></script>
+        <!-- Main content -->
+        <main class="lg:pl-72">
+            <div class="px-4 py-8 sm:px-6 lg:px-8">
+                <!-- MQTT Settings Page -->
+                <div id="mqtt-page" class="max-w-xl">
+                    <h2 class="text-2xl font-bold text-white mb-8">MQTT Einstellungen</h2>
+                    <form id="mqtt-form" class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400">MQTT Broker</label>
+                            <input type="text" id="mqtt-broker" class="mt-1 block w-full rounded-md border-0 bg-gray-800/50 py-2 px-3 text-white shadow-sm ring-1 ring-inset ring-gray-700 focus:ring-2 focus:ring-awtrix-primary sm:text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400">Port</label>
+                            <input type="number" id="mqtt-port" class="mt-1 block w-full rounded-md border-0 bg-gray-800/50 py-2 px-3 text-white shadow-sm ring-1 ring-inset ring-gray-700 focus:ring-2 focus:ring-awtrix-primary sm:text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400">Benutzername</label>
+                            <input type="text" id="mqtt-username" class="mt-1 block w-full rounded-md border-0 bg-gray-800/50 py-2 px-3 text-white shadow-sm ring-1 ring-inset ring-gray-700 focus:ring-2 focus:ring-awtrix-primary sm:text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400">Passwort</label>
+                            <input type="password" id="mqtt-password" class="mt-1 block w-full rounded-md border-0 bg-gray-800/50 py-2 px-3 text-white shadow-sm ring-1 ring-inset ring-gray-700 focus:ring-2 focus:ring-awtrix-primary sm:text-sm">
+                        </div>
+                        <button type="submit" class="w-full rounded-md bg-gradient-to-r from-awtrix-primary to-awtrix-secondary py-2 px-3 text-sm font-semibold text-gray-900 hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-awtrix-primary">
+                            Speichern
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Status Page -->
+                <div id="status-page" class="hidden">
+                    <h2 class="text-2xl font-bold text-white mb-8">System Status</h2>
+                    <div id="status-grid" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                        <!-- Status cards will be inserted here by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
 </body>
 </html>

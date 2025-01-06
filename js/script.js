@@ -2,15 +2,19 @@
 document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', () => {
         // Update active state
-        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-        item.classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(nav => {
+            nav.classList.remove('bg-gradient-to-r', 'from-awtrix-primary', 'to-awtrix-secondary', 'text-gray-900');
+            nav.classList.add('text-gray-400', 'hover:text-white', 'hover:bg-gray-800');
+        });
+        item.classList.add('bg-gradient-to-r', 'from-awtrix-primary', 'to-awtrix-secondary', 'text-gray-900');
+        item.classList.remove('text-gray-400', 'hover:text-white', 'hover:bg-gray-800');
 
         // Show/hide pages
         const targetPage = item.dataset.page;
         document.querySelectorAll('#mqtt-page, #status-page').forEach(page => {
-            page.style.display = 'none';
+            page.classList.add('hidden');
         });
-        document.getElementById(`${targetPage}-page`).style.display = 'block';
+        document.getElementById(`${targetPage}-page`).classList.remove('hidden');
 
         // If status page is selected, fetch latest data
         if (targetPage === 'status') {
@@ -74,10 +78,10 @@ function updateStatusDisplay(data) {
     Object.entries(translations).forEach(([key, label]) => {
         if (data[key] !== undefined) {
             const card = document.createElement('div');
-            card.className = 'status-card';
+            card.className = 'bg-gray-800/50 backdrop-blur-sm rounded-lg p-5 border border-gray-700/50';
             card.innerHTML = `
-                <div class="status-card-title">${label}</div>
-                <div class="status-card-value">${formatValue(key, data[key])}</div>
+                <div class="text-sm font-medium text-gray-400">${label}</div>
+                <div class="mt-1 text-2xl font-semibold text-white">${formatValue(key, data[key])}</div>
             `;
             statusGrid.appendChild(card);
         }
