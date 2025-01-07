@@ -97,23 +97,23 @@
  // feather.replace();
 
  j();
- document.getElementById("h").addEventListener("click", function() {
+ document.getElementById("downloadpng").addEventListener("click", function() {
    const a = document.createElement("a");
    a.href = c.toDataURL();
    a.download = 'awtrix.png';
    a.click()
  });
- document.getElementById("i").addEventListener("click", function() {
+ document.getElementById("nextapp").addEventListener("click", function() {
    const a = new XMLHttpRequest();
    a.open("POST", "/api/nextapp", !0);
    a.send()
  });
- document.getElementById("j").addEventListener("click", function() {
+ document.getElementById("previousapp").addEventListener("click", function() {
    const a = new XMLHttpRequest();
    a.open("POST", "/api/previousapp", !0);
    a.send()
  });
- document.getElementById("k").addEventListener("click", async function() {
+ document.getElementById("startgif").addEventListener("click", async function() {
    const a = this;
    if (f) {
      e.finish();
