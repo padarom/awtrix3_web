@@ -9,12 +9,26 @@
     <script src="js/script.js" defer></script>
 </head>
 <body>
+    
+    <!-- Overlay für das Menü -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Menü-Button -->
+    <button class="menu-toggle" id="menu-toggle">
+        <i data-feather="menu"></i>
+    </button>
+
     <aside class="sidebar">
         <div class="logo">
-            <i data-feather="settings"></i>
-            System
+            <img src="images/icon.png" alt="Logo" class="logo-image">
+            AWTRIX 3
         </div>
+        
         <nav>
+            <a class="nav-item" data-page="dashboard">
+                <i data-feather="dashboard"></i>
+                Dashboard
+            </a>
             <a class="nav-item" data-page="wifi">
                 <i data-feather="wifi"></i>
                 WLAN
@@ -36,9 +50,25 @@
                 Einstellungen
             </a>
         </nav>
+
+        <footer class="sidebar-footer">
+            <div>Connected</div>
+            <div>192.168.1.100</div>
+        </footer>
     </aside>
 
     <main>
+        <button class="menu-toggle" id="menu-toggle">
+            <i data-feather="menu"></i>
+            
+        </button>
+        <!-- Dashboard Einstellungen -->
+        <div id="dashboard" class="page">
+            <header class="header">
+                <h1>Dashboard</h1>
+            </header>
+        </div>
+
         <!-- WLAN Einstellungen -->
         <div id="wifi" class="page">
             <header class="header">

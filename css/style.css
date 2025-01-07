@@ -18,6 +18,7 @@ body {
     min-height: 100vh;
     background-color: #f8fafc;
     color: #1e293b;
+    overflow-x: hidden;
 }
 
 .sidebar {
@@ -30,7 +31,25 @@ body {
     height: 100vh;
     left: 0;
     top: 0;
+    z-index: 1001;
+    transition: var(--transition);
+    
 }
+
+.sidebar.hidden {
+    transform: translateX(-100%);
+}
+
+
+.sidebar-footer {
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.8rem;
+    border-top: 1px solid #374151;
+    color: #cbd5e1;
+}
+
+
 
 .logo {
     font-size: 1.4rem;
@@ -176,11 +195,14 @@ select.form-control {
 
 .page {
     display: none;
-    animation: fadeIn 0.3s ease;
+    animation: fadeIn 0.8s ease;
+    
+   
 }
 
 .page.active {
     display: block;
+    opacity: 1;
 }
 
 @keyframes fadeIn {
@@ -338,12 +360,77 @@ select.form-control {
     color: #1e293b;
 }
 
+/* Overlay für das Menü */
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+/* Overlay sichtbar machen */
+.overlay.active {
+    display: block;
+}
+
 /* Responsive Anpassungen */
 @media (max-width: 768px) {
-    .settings-grid {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
+
+    .sidebar {
+        transform: translateX(-100%);
     }
+
+    .sidebar.hidden {
+        transform: translateX(0);
+    }
+
+    main {
+        margin-left: 0;
+    }
+
+
+}
+
+.menu-toggle {
+    display: none; /* Standardmäßig ausblenden */
+
+    /* Nur im mobilen Modus sichtbar */
+    @media (max-width: 768px) {
+        display: flex;
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        z-index: 1002;
+    }
+
+}
+
+.overlay {
+    display: none; /* Standardmäßig ausblenden */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.overlay.active {
+    display: block;
 }
 /* Zusätzliche Styles für die Icon-Galerie */
 .upload-area {

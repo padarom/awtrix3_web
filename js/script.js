@@ -1,27 +1,37 @@
-  // Initialisiere Feather Icons
-  feather.replace();
+document.addEventListener('DOMContentLoaded', () => {
 
-  // Seiten Navigation
-  document.querySelectorAll('.nav-item').forEach(item => {
-      item.addEventListener('click', () => {
-          // Aktive Klasse von allen Nav-Items entfernen
-          document.querySelectorAll('.nav-item').forEach(nav => {
-              nav.classList.remove('active');
-          });
-          
-          // Aktive Klasse zum geklickten Item hinzufügen
-          item.classList.add('active');
-          
-          // Alle Seiten ausblenden
-          document.querySelectorAll('.page').forEach(page => {
-              page.classList.remove('active');
-          });
-          
-          // Gewählte Seite anzeigen
-          const pageId = item.getAttribute('data-page');
-          document.getElementById(pageId).classList.add('active');
-      });
-  });
+        // Menü-Button Toggle
+        const menuToggle = document.getElementById("menu-toggle");
+        const sidebar = document.querySelector(".sidebar");
+        const overlay = document.createElement('div');
+        overlay.classList.add('overlay');
+        document.body.appendChild(overlay);
+    
+        // Sidebar ein- und ausblenden
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('hidden');
+            overlay.classList.toggle('active');
+        });
+    
+        // Klick auf das Overlay
+        overlay.addEventListener('click', () => {
+            sidebar.classList.add('hidden');
+            overlay.classList.remove('active');
+        });
+    
+
+    // Seiten-Navigation
+    document.querySelectorAll('.nav-item').forEach(nav => {
+        nav.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            nav.classList.add('active');
+
+            const pageId = nav.getAttribute('data-page');
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        });
+    });
 
   // Initial die erste Seite anzeigen
   document.querySelector('.nav-item').click();
@@ -48,3 +58,6 @@
           }, 2000);
       });
   });
+ // feather.replace();
+
+});
