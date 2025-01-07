@@ -601,3 +601,43 @@ select.form-control {
     width: 16px;
     height: 16px;
 }
+
+.stats {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    flex: 1;
+    background-color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    font-weight: bold;
+}
+
+.live-view {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.live-view-header {
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.live-view-content {
+    height: 200px;
+    background-color: #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.live-view-actions {
+    display: flex;
+    justify-content: space-between;
+}
