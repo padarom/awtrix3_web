@@ -16,7 +16,7 @@
 body {
     display: flex;
     min-height: 100vh;
-    background-color: #f8fafc;
+    background: #f8fafc;
     color: #1e293b;
     overflow-x: hidden;
 }
