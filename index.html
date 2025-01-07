@@ -5,11 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>System Einstellungen</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.29.0/feather.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Blueforcer/awtrix3_web_test/css/style.css">
     <!--For development-->
     <!--link rel="stylesheet" href="css/style.css"-->
     <!--script src="js/script.js" defer></script-->
     <script src="https://cdn.jsdelivr.net/gh/Blueforcer/awtrix3_web_test/js/script.js" defer></script>
+
+    <script type="module">
+        import {
+          GIFEncoder,
+          quantize,
+          applyPalette
+        } from 'https://unpkg.com/gifenc@1.0.3';
+        const c = document.getElementById('c'),
+          d = c.getContext('2d'),
+          w = 1052,
+          h = 260;
+        c.width = w;
+        c.height = h;
+        let e, f = !1,
+          g = performance.now();
+    </script>
+
 </head>
 <body>
     
@@ -18,7 +36,7 @@
 
     <!-- Menü-Button -->
     <button class="menu-toggle" id="menu-toggle">
-        <i data-feather="menu"></i>
+        <img src="https://cdn.jsdelivr.net/gh/Blueforcer/awtrix3_web_test/images/icon.png" alt="Logo" class="logo-image">
     </button>
 
     <aside class="sidebar">
@@ -79,10 +97,16 @@
                 </div>
                 <div class="live-view">
                     <div class="live-view-header">Live View</div>
-                    <div class="live-view-content"></div>
+                    <div  id="a">
+                        <canvas id="c"></canvas>
+                    </div>
                     <div class="live-view-actions">
-                        <button>Download PNG</button>
-                        <button>Start GIF Recording</button>
+                        <button id="j">
+                            < </button>
+                              <button id="h">Download PNG</button>
+                              <button id="k">Start GIF recording</button>
+                              <button id="i">></button>
+                        
                     </div>
                 </div>
              </div>

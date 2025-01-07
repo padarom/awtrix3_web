@@ -403,13 +403,13 @@ select.form-control {
         display: flex;
         position: fixed;
         top: 10px;
-        right: 10px;
-        background: var(--primary);
+        right: 10px; 
         color: white;
         border: none;
+       /* background: var(--primary);
         border-radius: 50%;
         width: 50px;
-        height: 50px;
+        height: 50px;*/
         justify-content: center;
         align-items: center;
         cursor: pointer;
@@ -641,3 +641,12 @@ select.form-control {
     display: flex;
     justify-content: space-between;
 }
+
+/* LIVE View */
+canvas {
+    position: relative;
+    max-width: 100%;
+    max-height: 100%;
+    background: #000;
+    z-index: 1
+  }
