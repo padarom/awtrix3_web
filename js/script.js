@@ -34,7 +34,7 @@
     })
   }
 
-document.addEventListener('DOMContentLoaded', () => {
+
 
         // Menü-Button Toggle
         const menuToggle = document.getElementById("menu-toggle");
@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
    }
  })
 
-});
+
 
 function l(b, a, c) {
     const d = b instanceof Blob ? b : new Blob([b], {
