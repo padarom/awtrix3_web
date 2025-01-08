@@ -1,9 +1,5 @@
-import {
-    GIFEncoder,
-    quantize,
-    applyPalette
-  } from 'https://unpkg.com/gifenc@1.0.3';
-  
+
+
 const c = document.getElementById('c'),
           d = c.getContext('2d'),
           w = 1052,
