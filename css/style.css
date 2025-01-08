@@ -642,7 +642,7 @@ select.form-control {
     justify-content: space-between;
 }
 
-/* LIVE View */
+/* LIVE View Box*/
 canvas {
     position: relative;
     max-width: 100%;
