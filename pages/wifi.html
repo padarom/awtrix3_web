@@ -1,0 +1,29 @@
+ <!-- WLAN Einstellungen -->
+ <div id="wifi" class="page">
+    <header class="header">
+        <h1>WLAN Einstellungen</h1>
+    </header>
+    <div class="content-card">
+        <form id="wifiForm">
+            <div class="form-group">
+                <label for="ssid">WLAN Name (SSID)</label>
+                <input type="text" id="ssid" class="form-control" placeholder="Ihr WLAN-Netzwerk" required>
+            </div>
+            <div class="form-group">
+                <label for="password">WLAN Passwort</label>
+                <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn">
+                <i data-feather="save"></i>
+                Speichern
+            </button>
+        </form>
+        <div class="connection-status">
+            <div class="status-badge success">
+                <i data-feather="check-circle"></i>
+                Verbunden
+            </div>
+            <p class="info-text">Verbunden mit "Mein WLAN" | IP: 192.168.1.100</p>
+        </div>
+    </div>
+</div>

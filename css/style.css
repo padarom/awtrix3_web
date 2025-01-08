@@ -194,7 +194,7 @@ select.form-control {
 }
 
 .page {
-    display: none;
+   
     animation: fadeIn 0.8s ease;
     
    
@@ -640,6 +640,12 @@ select.form-control {
 .live-view-actions {
     display: flex;
     justify-content: space-between;
+}
+
+#content {
+    display: block;
+    opacity: 1;
+    visibility: visible;
 }
 
 /* LIVE View Box*/

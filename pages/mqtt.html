@@ -1,0 +1,40 @@
+        <!-- MQTT Einstellungen -->
+        <div id="mqtt" class="page">
+            <header class="header">
+                <h1>MQTT Einstellungen</h1>
+            </header>
+            <div class="content-card">
+                <form id="mqttForm">
+                    <div class="form-group">
+                        <label for="broker">Broker URL</label>
+                        <input type="text" id="broker" class="form-control" placeholder="mqtt.example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="port">Port</label>
+                        <input type="number" id="port" class="form-control" value="1883" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="mqttUser">Benutzername</label>
+                        <input type="text" id="mqttUser" class="form-control" placeholder="Optional">
+                    </div>
+                    <div class="form-group">
+                        <label for="mqttPassword">Passwort</label>
+                        <input type="password" id="mqttPassword" class="form-control" placeholder="Optional">
+                    </div>
+                    <div class="form-group">
+                        <label for="topic">Topic Prefix</label>
+                        <input type="text" id="topic" class="form-control" placeholder="home/sensors/" required>
+                    </div>
+                    <button type="submit" class="btn">
+                        <i data-feather="save"></i>
+                        Speichern
+                    </button>
+                </form>
+                <div class="connection-status">
+                    <div class="status-badge error">
+                        <i data-feather="x-circle"></i>
+                        Nicht verbunden
+                    </div>
+                </div>
+            </div>
+        </div>

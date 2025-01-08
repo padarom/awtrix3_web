@@ -1,0 +1,159 @@
+<!-- Settings -->
+<div id="settings" class="page">
+    <header class="header">
+        <h1>System Einstellungen</h1>
+    </header>
+
+    <!-- Basic Settings -->
+    <div class="content-card settings-section">
+        <h2>Grundeinstellungen</h2>
+        <div class="settings-grid">
+            <div class="setting-item">
+                <label for="hostname">Hostname</label>
+                <input type="text" id="hostname" class="form-control" value="awtrix-123">
+                <span class="setting-desc">Hostname für App-Discovery und mDNS</span>
+            </div>
+            <div class="setting-item">
+                <label for="ap_timeout">AP Timeout</label>
+                <input type="number" id="ap_timeout" class="form-control" value="15">
+                <span class="setting-desc">Timeout in Sekunden für AP-Modus</span>
+            </div>
+            <div class="setting-item">
+                <label for="bootsound">Boot Sound</label>
+                <input type="text" id="bootsound" class="form-control" placeholder="Melodie beim Start">
+                <span class="setting-desc">Eigene Melodie beim Systemstart</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Display Settings -->
+    <div class="content-card settings-section">
+        <h2>Display Einstellungen</h2>
+        <div class="settings-grid">
+            <div class="setting-item">
+                <label for="matrix">Matrix Layout</label>
+                <select id="matrix" class="form-control">
+                    <option value="0">Standard (0)</option>
+                    <option value="1">Layout 1</option>
+                    <option value="2">Layout 2</option>
+                </select>
+                <span class="setting-desc">Matrix-Anordnung</span>
+            </div>
+            <div class="setting-item color-setting">
+                <label>Farbkorrektur</label>
+                <div class="color-inputs">
+                    <input type="number" class="form-control" value="255" min="0" max="255">
+                    <input type="number" class="form-control" value="255" min="0" max="255">
+                    <input type="number" class="form-control" value="255" min="0" max="255">
+                </div>
+                <span class="setting-desc">RGB Farbkorrektur</span>
+            </div>
+            <div class="setting-item">
+                <label>Bildschirm-Optionen</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="rotate_screen">
+                        <span>Bildschirm rotieren</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="mirror_screen">
+                        <span>Bildschirm spiegeln</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sensor Settings -->
+    <div class="content-card settings-section">
+        <h2>Sensor Einstellungen</h2>
+        <div class="settings-grid">
+            <div class="setting-item">
+                <label for="temp_dec_places">Dezimalstellen Temperatur</label>
+                <input type="number" id="temp_dec_places" class="form-control" value="0" min="0" max="3">
+                <span class="setting-desc">Anzahl der Dezimalstellen</span>
+            </div>
+            <div class="setting-item">
+                <label for="temp_offset">Temperatur Offset</label>
+                <input type="number" id="temp_offset" class="form-control" value="-9" step="0.1">
+                <span class="setting-desc">Offset für Temperaturmessung</span>
+            </div>
+            <div class="setting-item">
+                <label for="hum_offset">Luftfeuchtigkeits Offset</label>
+                <input type="number" id="hum_offset" class="form-control" value="0" step="0.1">
+                <span class="setting-desc">Offset für Feuchtigkeitsmessung</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Brightness Settings -->
+    <div class="content-card settings-section">
+        <h2>Helligkeits Einstellungen</h2>
+        <div class="settings-grid">
+            <div class="setting-item">
+                <label for="min_brightness">Minimale Helligkeit</label>
+                <input type="number" id="min_brightness" class="form-control" value="2" min="0" max="255">
+                <span class="setting-desc">Minimale Helligkeit für Auto-Brightness</span>
+            </div>
+            <div class="setting-item">
+                <label for="max_brightness">Maximale Helligkeit</label>
+                <input type="number" id="max_brightness" class="form-control" value="180" min="0" max="255">
+                <span class="setting-desc">Maximale Helligkeit (Achtung: Überhitzungsgefahr!)</span>
+            </div>
+            <div class="setting-item">
+                <label for="ldr_gamma">LDR Gamma</label>
+                <input type="number" id="ldr_gamma" class="form-control" value="3.0" step="0.1">
+                <span class="setting-desc">Gamma-Korrektur für Helligkeitssteuerung</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Settings -->
+    <div class="content-card settings-section">
+        <h2>Weitere Einstellungen</h2>
+        <div class="settings-grid">
+            <div class="setting-item">
+                <label for="ha_prefix">HomeAssistant Prefix</label>
+                <input type="text" id="ha_prefix" class="form-control" value="homeassistant">
+                <span class="setting-desc">Prefix für HomeAssistant Discovery</span>
+            </div>
+            <div class="setting-item">
+                <label for="stats_interval">Statistik Intervall</label>
+                <input type="number" id="stats_interval" class="form-control" value="10000" step="1000">
+                <span class="setting-desc">Intervall für Statistik-Updates (ms)</span>
+            </div>
+            <div class="setting-item">
+                <label>Weitere Optionen</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="debug_mode">
+                        <span>Debug Modus</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="dfplayer">
+                        <span>DFPlayer aktivieren</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="new_year">
+                        <span>Neujahrs-Animation</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="swap_buttons">
+                        <span>Tasten tauschen</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="settings-actions">
+        <button class="btn btn-secondary">
+            <i data-feather="refresh-cw"></i>
+            Zurücksetzen
+        </button>
+        <button class="btn">
+            <i data-feather="save"></i>
+            Speichern
+        </button>
+    </div>
+</div>
