@@ -1,5 +1,3 @@
-
-
 // Sidebar und Menü-Toggle
 const menuToggle = document.getElementById("menu-toggle");
 const sidebar = document.querySelector(".sidebar");
@@ -36,25 +34,24 @@ async function loadPage(pageId) {
         const response = await fetch(`pages/${pageId}.html`);
         if (!response.ok) throw new Error(`Fehler beim Laden der Seite: ${pageId}`);
         const html = await response.text();
-        console.log('Geladener HTML-Inhalt:', html);
 
         const content = document.getElementById('content');
-        console.log('Content-Container:', content);
-
         if (content) {
-            
             content.innerHTML = html;
+            // Dynamisches Skript laden
+            const script = document.createElement('script');
+            script.src = `js/${pageId}.js`;
+            script.type = 'module';
+            // Event erst dispatchen, wenn das Skript geladen ist
+            script.onload = () => {
+                document.dispatchEvent(new CustomEvent('awtrixPageChange', {
+                    detail: { pageId }
+                }));
+            };
+            document.body.appendChild(script);
         } else {
             console.error('Content-Container (#content) nicht gefunden.');
         }
-
-                // Dynamisches Skript laden
-                const script = document.createElement('script');
-                script.src = `js/${pageId}.js`; // Stelle sicher, dass das Skript für die Seite existiert
-                script.type = 'module'; // Füge dies hinzu, wenn das Skript ein Modul ist
-                document.body.appendChild(script);
-                console.log(script.src);
-        
     } catch (error) {
         console.error('Fehler beim Laden der Seite:', error);
     }
