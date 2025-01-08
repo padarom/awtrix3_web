@@ -1,6 +1,9 @@
 
 
-const c = document.getElementById('c'),
+
+
+  function j() {
+    const c = document.getElementById('c'),
           d = c.getContext('2d'),
           w = 1052,
           h = 260;
@@ -8,8 +11,6 @@ const c = document.getElementById('c'),
         c.height = h;
         let e, f = !1,
           g = performance.now();
-
-  function j() {
     fetch("/api/screen").then(function(a) {
       return a.json()
     }).then(function(a) {
