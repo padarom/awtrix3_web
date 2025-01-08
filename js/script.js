@@ -1,3 +1,5 @@
+
+
 // Sidebar und Menü-Toggle
 const menuToggle = document.getElementById("menu-toggle");
 const sidebar = document.querySelector(".sidebar");
@@ -52,6 +54,14 @@ async function loadPage(pageId) {
         } else {
             console.error('Content-Container (#content) nicht gefunden.');
         }
+
+                // Dynamisches Skript laden
+                const script = document.createElement('script');
+                script.src = `js/${pageId}.js`; // Stelle sicher, dass das Skript für die Seite existiert
+                script.type = 'module'; // Füge dies hinzu, wenn das Skript ein Modul ist
+                document.body.appendChild(script);
+                console.log(script.src);
+        
     } catch (error) {
         console.error('Fehler beim Laden der Seite:', error);
     }

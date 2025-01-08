@@ -508,7 +508,7 @@ select.form-control {
 
 
 
-.stats {
+#stats {
     display: flex;
     gap: 1rem;
     margin-bottom: 2rem;
@@ -973,3 +973,34 @@ canvas {
 }
 
 /* ...existing code... */
+
+  #container-live {
+    display: flex;
+    justify-content: center; /* Falls zusätzliche Inhalte innerhalb von #a sind */
+    align-items: center;
+    width: 100%;
+    padding: 0.5rem;
+
+  }
+
+  .btn2 {
+    background-color: var(--primary);
+    color: white;
+    padding: 0.55rem 0.8rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn2 button {
+    width: 150px;
+    height: 50px;
+    color: #fff;
+    background: #333
+  }

@@ -1,3 +1,5 @@
+
+
 // Canvas initialisieren
 const c = document.getElementById('c');
 let d, w = 1052, h = 260, e, f = false, g = performance.now();
@@ -82,5 +84,46 @@ function l(b, a, c) {
     f.click();
 }
 
+function formatUptime(seconds) {
+    const days = Math.floor(seconds / (24 * 60 * 60));
+    const hours = Math.floor((seconds % (24 * 60 * 60)) / (60 * 60));
+    const minutes = Math.floor((seconds % (60 * 60)) / 60);
+    const secs = seconds % 60;
+
+    return `${days}d ${hours}h ${minutes}m ${secs}s`;
+}
+
+
+async function fetchAndDisplayStats() {
+    try {
+        // Hole die Daten von /api/stats
+        const response = await fetch('http://192.168.20.210/api/stats');
+        if (!response.ok) throw new Error('Fehler beim Laden der Statistiken');
+        
+        const stats = await response.json();
+        const formattedUptime = formatUptime(stats.uptime);
+        // Zeige die Daten im entsprechenden Bereich an
+        const statsContainer = document.getElementById('stats');
+        statsContainer.innerHTML = `
+            <div class="stat-card">RAM<br><span> ${stats.ram} KB</span></div>
+            <div class="stat-card">Flash<br><span>${stats.flash} </span></div>
+            <div class="stat-card">Uptime<br><span>${formattedUptime}</span></div>
+            <div class="stat-card">Messages<br><span>${stats.messages}</span></div>
+        `;
+         
+        
+    } catch (error) {
+        console.error('Fehler beim Abrufen der Statistiken:', error);
+    }
+}
+// Initialisiere das Dashboard
+async function initializeDashboard() {
+    
+    await fetchAndDisplayStats();
+}
+
+// Rufe die Initialisierung des Dashboards auf, wenn die Seite geladen wird
+initializeDashboard();
 // Initialisierung
 j(); // Startet das Rendern der Canvas-Daten
+
