@@ -1,3 +1,5 @@
+
+
 // Canvas initialisieren
 const c = document.getElementById('c');
 let d, w = 1052, h = 260, e, f = false, g = performance.now();
@@ -124,3 +126,4 @@ async function initializeDashboard() {
 initializeDashboard();
 // Initialisierung
 j(); // Startet das Rendern der Canvas-Daten
+

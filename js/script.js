@@ -1,5 +1,4 @@
 
-
 // Sidebar und Menü-Toggle
 const menuToggle = document.getElementById("menu-toggle");
 const sidebar = document.querySelector(".sidebar");
@@ -55,6 +54,7 @@ async function loadPage(pageId) {
                 document.body.appendChild(script);
                 console.log(script.src);
         
+                
     } catch (error) {
         console.error('Fehler beim Laden der Seite:', error);
     }
