@@ -47,7 +47,7 @@ function initializeSettings() {
     document.querySelectorAll('input[type="color"]').forEach(input => {
         const toggleId = input.id + '_enabled';
         const toggle = document.getElementById(toggleId);
-        
+
         // Handle toggle changes
         toggle?.addEventListener('change', (e) => {
             input.disabled = !e.target.checked;
@@ -56,9 +56,9 @@ function initializeSettings() {
             } else {
                 // Send current color value when enabled
                 const hex = input.value;
-                const r = parseInt(hex.substr(1,2), 16);
-                const g = parseInt(hex.substr(3,2), 16);
-                const b = parseInt(hex.substr(5,2), 16);
+                const r = parseInt(hex.substr(1, 2), 16);
+                const g = parseInt(hex.substr(3, 2), 16);
+                const b = parseInt(hex.substr(5, 2), 16);
                 const colorValue = (r << 16) | (g << 8) | b;
                 updateSetting(input.id, colorValue);
             }
@@ -68,9 +68,9 @@ function initializeSettings() {
         input.addEventListener('change', (e) => {
             if (!input.disabled) {
                 const hex = e.target.value;
-                const r = parseInt(hex.substr(1,2), 16);
-                const g = parseInt(hex.substr(3,2), 16);
-                const b = parseInt(hex.substr(5,2), 16);
+                const r = parseInt(hex.substr(1, 2), 16);
+                const g = parseInt(hex.substr(3, 2), 16);
+                const b = parseInt(hex.substr(5, 2), 16);
                 const colorValue = (r << 16) | (g << 8) | b;
                 updateSetting(e.target.id, colorValue);
             }
@@ -80,7 +80,7 @@ function initializeSettings() {
     // Handle static IP toggle
     const staticIpToggle = document.getElementById('NET_STATIC');
     const ipInputs = document.querySelectorAll('.ip-setting input');
-    
+
     staticIpToggle?.addEventListener('change', (e) => {
         ipInputs.forEach(input => {
             input.disabled = !e.target.checked;

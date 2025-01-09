@@ -432,7 +432,8 @@ select.form-control {
 .overlay.active {
     display: block;
 }
-/* Zusätzliche Styles für die Icon-Galerie */
+
+
 .upload-area {
     border: 2px dashed #e2e8f0;
     border-radius: 8px;
@@ -506,8 +507,6 @@ select.form-control {
     padding-left: 2.5rem;
 }
 
-
-
 #stats {
     display: flex;
     gap: 1rem;
@@ -554,7 +553,7 @@ select.form-control {
     visibility: visible;
 }
 
-/* LIVE View Box*/
+
 canvas {
     position: relative;
     max-width: 100%;
@@ -665,7 +664,6 @@ canvas {
     height: 16px;
 }
 
-/* ...existing code... */
 
 .icon-toolbar {
     background: #fff;
@@ -706,7 +704,7 @@ canvas {
     background-color: #eff6ff;
 }
 
-/* ...existing code... */
+
 
 .upload-section {
     padding: 1rem;
@@ -775,9 +773,7 @@ canvas {
     gap: 1rem;
 }
 
-/* ...existing code... */
 
-/* ...existing code... */
 
 .lametric-import {
     padding: 1rem 0;
@@ -898,9 +894,6 @@ canvas {
     object-fit: contain;
 }
 
-/* ...existing code... */
-
-/* ...existing code... */
 
 #toast-container {
     position: fixed;
@@ -972,11 +965,10 @@ canvas {
     }
 }
 
-/* ...existing code... */
 
   #container-live {
     display: flex;
-    justify-content: center; /* Falls zusätzliche Inhalte innerhalb von #a sind */
+    justify-content: center;
     align-items: center;
     width: 100%;
     padding: 0.5rem;
@@ -1037,7 +1029,7 @@ canvas {
     100% { transform: rotate(360deg); }
 }
 
-/* ...existing code... */
+
 
 .color-picker {
     width: 100%;
@@ -1058,7 +1050,7 @@ canvas {
     border: 1.5px solid #e2e8f0;
 }
 
-/* ...existing code... */
+
 
 .color-control {
     display: flex;
@@ -1071,12 +1063,11 @@ canvas {
     cursor: not-allowed;
 }
 
-/* ...existing code... */
 
 .ip-setting input:disabled {
     background-color: #f1f5f9;
     cursor: not-allowed;
 }
 
-/* ...existing code... */
+
 
