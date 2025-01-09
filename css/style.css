@@ -1069,16 +1069,36 @@ canvas {
 
 /* ...existing code... */
 
+/* Improved Navigation Styles */
 .nav-group {
     position: relative;
+    margin-bottom: 0.5rem;
 }
 
 .nav-item-parent {
+    display: flex;
     justify-content: space-between;
+    cursor: pointer;
+    padding: 0.875rem 1.25rem;  /* Gleiche Polsterung wie nav-item */
+    color: #cbd5e1;
+    text-decoration: none;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    transition: var(--transition);
+}
+
+.nav-item-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;  /* Gleicher Abstand wie bei normalen nav-items */
+    flex: 1;       /* Nimmt den verfügbaren Platz ein */
 }
 
 .nav-arrow {
+    font-size: 0.8rem;
     transition: transform 0.3s ease;
+    opacity: 0.7;
+    margin-left: 0.5rem;  /* Abstand zwischen Text und Pfeil */
 }
 
 .nav-group.open .nav-arrow {
@@ -1087,18 +1107,47 @@ canvas {
 
 .nav-subitems {
     display: none;
-    padding-left: 1rem;
-    margin: 0.5rem 0;
+    margin: 0.25rem 0 0.25rem 1.25rem;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .nav-group.open .nav-subitems {
     display: block;
+    animation: slideDown 0.3s ease;
 }
 
 .sub-item {
-    font-size: 0.9em;
+    font-size: 0.9rem;
     padding: 0.6rem 1rem;
+    margin-bottom: 0.25rem;
+    opacity: 0.8;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 }
+
+.sub-item:hover {
+    opacity: 1;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sub-item.active {
+    background-color: var(--primary);
+    opacity: 1;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ...existing code... */
 
 /* ...existing code... */
 
