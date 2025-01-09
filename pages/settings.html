@@ -1,147 +1,536 @@
 <!-- Settings -->
 <div id="settings" class="page">
     <header class="header">
-        <h1>System Einstellungen</h1>
+        <h1>System Settings</h1>
     </header>
+
+    <!-- Add loading indicator -->
+    <div id="settings-loading" class="loading-indicator">
+        <i class="fas fa-spinner loading-spinner"></i>
+        <span>Loading Settings...</span>
+    </div>
 
     <!-- Basic Settings -->
     <div class="content-card settings-section">
-        <h2>Grundeinstellungen</h2>
+        <h2>Basic Settings</h2>
         <div class="settings-grid">
             <div class="setting-item">
-                <label for="hostname">Hostname</label>
-                <input type="text" id="hostname" class="form-control" value="awtrix-123">
-                <span class="setting-desc">Hostname für App-Discovery und mDNS</span>
+                <label for="HOSTNAME">Hostname</label>
+                <input type="text" id="HOSTNAME" class="form-control" value="awtrix-123">
+                <span class="setting-desc">Hostname for app discovery and mDNS</span>
             </div>
             <div class="setting-item">
-                <label for="ap_timeout">AP Timeout</label>
-                <input type="number" id="ap_timeout" class="form-control" value="15">
-                <span class="setting-desc">Timeout in Sekunden für AP-Modus</span>
+                <label for="AP_TIMEOUT">AP Timeout</label>
+                <input type="number" id="AP_TIMEOUT" class="form-control" value="15">
+                <span class="setting-desc">Timeout in seconds for AP mode</span>
             </div>
             <div class="setting-item">
-                <label for="bootsound">Boot Sound</label>
-                <input type="text" id="bootsound" class="form-control" placeholder="Melodie beim Start">
-                <span class="setting-desc">Eigene Melodie beim Systemstart</span>
+                <label for="BOOT_SOUND">Boot Sound</label>
+                <input type="text" id="BOOT_SOUND" class="form-control" placeholder="Melody at startup">
+                <span class="setting-desc">Custom melody for system startup</span>
             </div>
         </div>
     </div>
 
     <!-- Display Settings -->
     <div class="content-card settings-section">
-        <h2>Display Einstellungen</h2>
+        <h2>Display Settings</h2>
         <div class="settings-grid">
             <div class="setting-item">
-                <label for="matrix">Matrix Layout</label>
-                <select id="matrix" class="form-control">
+                <label for="MATRIX_LAYOUT">Matrix Layout</label>
+                <select id="MATRIX_LAYOUT" class="form-control">
                     <option value="0">Standard (0)</option>
                     <option value="1">Layout 1</option>
                     <option value="2">Layout 2</option>
                 </select>
-                <span class="setting-desc">Matrix-Anordnung</span>
+                <span class="setting-desc">Matrix arrangement</span>
             </div>
             <div class="setting-item color-setting">
-                <label>Farbkorrektur</label>
+                <label>Color Correction</label>
                 <div class="color-inputs">
-                    <input type="number" class="form-control" value="255" min="0" max="255">
-                    <input type="number" class="form-control" value="255" min="0" max="255">
-                    <input type="number" class="form-control" value="255" min="0" max="255">
+                    <input type="number" class="form-control" value="255" min="0" max="255" id="COLOR_CORRECTION_R">
+                    <input type="number" class="form-control" value="255" min="0" max="255" id="COLOR_CORRECTION_G">
+                    <input type="number" class="form-control" value="255" min="0" max="255" id="COLOR_CORRECTION_B">
                 </div>
-                <span class="setting-desc">RGB Farbkorrektur</span>
+                <span class="setting-desc">RGB color correction</span>
+            </div>
+            <div class="setting-item color-setting">
+                <label>Color Temperature</label>
+                <div class="color-inputs">
+                    <input type="number" class="form-control" value="255" min="0" max="255" id="C_TEMPERATURE_R">
+                    <input type="number" class="form-control" value="255" min="0" max="255" id="C_TEMPERATURE_G">
+                    <input type="number" class="form-control" value="255" min="0" max="255" id="C_TEMPERATURE_B">
+                </div>
+                <span class="setting-desc">RGB color temperature correction</span>
             </div>
             <div class="setting-item">
-                <label>Bildschirm-Optionen</label>
+                <label>Screen Options</label>
                 <div class="checkbox-group">
                     <label class="checkbox-label">
-                        <input type="checkbox" id="rotate_screen">
-                        <span>Bildschirm rotieren</span>
+                        <input type="checkbox" id="ROTATE_SCREEN">
+                        <span>Rotate Screen</span>
                     </label>
                     <label class="checkbox-label">
-                        <input type="checkbox" id="mirror_screen">
-                        <span>Bildschirm spiegeln</span>
+                        <input type="checkbox" id="MIRROR_SCREEN">
+                        <span>Mirror Screen</span>
                     </label>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Colors -->
+    <div class="content-card settings-section">
+        <h2>App Colors</h2>
+        <div class="settings-grid">
+            <div class="setting-item">
+                <label for="TCOL">Global Text Color</label>
+                <div class="color-control">
+                    <input type="color" id="TCOL" class="form-control color-picker" disabled>
+                </div>
+            </div>
+            <div class="setting-item">
+                <label for="TIME_COL">Time App Color</label>
+                <div class="color-control">
+                    <input type="checkbox" id="TIME_COL_enabled" class="color-toggle">
+                    <input type="color" id="TIME_COL" class="form-control color-picker" disabled>
+                </div>
+            </div>
+            <div class="setting-item">
+                <label for="DATE_COL">Date App Color</label>
+                <div class="color-control">
+                    <input type="checkbox" id="DATE_COL_enabled" class="color-toggle">
+                    <input type="color" id="DATE_COL" class="form-control color-picker" disabled>
+                </div>
+            </div>
+            <div class="setting-item">
+                <label for="TEMP_COL">Temperature App Color</label>
+                <div class="color-control">
+                    <input type="checkbox" id="TEMP_COL_enabled" class="color-toggle">
+                    <input type="color" id="TEMP_COL" class="form-control color-picker" disabled>
+                </div>
+            </div>
+            <div class="setting-item">
+                <label for="HUM_COL">Humidity App Color</label>
+                <div class="color-control">
+                    <input type="checkbox" id="HUM_COL_enabled" class="color-toggle">
+                    <input type="color" id="HUM_COL" class="form-control color-picker" disabled>
+                </div>
+            </div>
+            <div class="setting-item">
+                <label for="BAT_COL">Battery App Color</label>
+                <div class="color-control">
+                    <input type="checkbox" id="BAT_COL_enabled" class="color-toggle">
+                    <input type="color" id="BAT_COL" class="form-control color-picker" disabled>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calendar Settings -->
+    <div class="content-card settings-section">
+        <h2>Calendar Settings</h2>
+        <div class="settings-grid">
+            <div class="setting-item">
+                <label for="CHCOL">Header Color</label>
+                <div class="color-control">
+                    <input type="color" id="CHCOL" class="form-control color-picker" disabled>
+                </div>
+            </div>
+            <div class="setting-item">
+                <label for="CTCOL">Text Color</label>
+                <div class="color-control">
+                    <input type="color" id="CTCOL" class="form-control color-picker" disabled>
+                </div>
+            </div>
+            <div class="setting-item">
+                <label for="CBCOL">Body Color</label>
+                <div class="color-control">
+                    <input type="color" id="CBCOL" class="form-control color-picker" disabled>
+                </div>
+            </div>
+            <div class="setting-item">
+                <label for="WDCA">Active Weekday Color</label>
+                <div class="color-control">
+                    <input type="color" id="WDCA" class="form-control color-picker" disabled>
+                </div>
+            </div>
+            <div class="setting-item">
+                <label for="WDCI">Inactive Weekday Color</label>
+                <div class="color-control">
+                    <input type="color" id="WDCI" class="form-control color-picker" disabled>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Display Behavior -->
+    <div class="content-card settings-section">
+        <h2>Display Behavior</h2>
+        <div class="settings-grid">
+            <div class="setting-item">
+                <label for="BRI">Brightness</label>
+                <input type="number" id="BRI" class="form-control" min="0" max="255">
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="ABRI">
+                        <span>Auto Brightness</span>
+                    </label>
+                </div>
+            </div>
+            <div class="setting-item">
+                <label for="TEFF">Transition Effect</label>
+                <select id="TEFF" class="form-control">
+                    <option value="0">Random</option>
+                    <option value="1">Slide</option>
+                    <option value="2">Dim</option>
+                    <option value="3">Zoom</option>
+                    <option value="4">Rotate</option>
+                    <option value="5">Pixelate</option>
+                    <option value="6">Curtain</option>
+                    <option value="7">Ripple</option>
+                    <option value="8">Blink</option>
+                    <option value="9">Reload</option>
+                    <option value="10">Fade</option>
+                </select>
+            </div>
+            <div class="setting-item">
+                <label for="TSPEED">Transition Time (ms)</label>
+                <input type="number" id="TSPEED" class="form-control" min="0">
+            </div>
+            <div class="setting-item">
+                <label for="ATIME">Time per App (ms)</label>
+                <input type="number" id="ATIME" class="form-control" min="0">
+            </div>
+            <div class="setting-item">
+                <label for="SSPEED">Scroll Speed</label>
+                <input type="number" id="SSPEED" class="form-control" min="1" max="100">
             </div>
         </div>
     </div>
 
     <!-- Sensor Settings -->
     <div class="content-card settings-section">
-        <h2>Sensor Einstellungen</h2>
+        <h2>Sensor Settings</h2>
         <div class="settings-grid">
             <div class="setting-item">
-                <label for="temp_dec_places">Dezimalstellen Temperatur</label>
-                <input type="number" id="temp_dec_places" class="form-control" value="0" min="0" max="3">
-                <span class="setting-desc">Anzahl der Dezimalstellen</span>
+                <label for="temp_dec_places">Temperature Decimal Places</label>
+                <input type="number" id="TEMP_DECIMAL_PLACES" class="form-control" value="0" min="0" max="3">
+                <span class="setting-desc">Number of decimal places</span>
             </div>
             <div class="setting-item">
-                <label for="temp_offset">Temperatur Offset</label>
-                <input type="number" id="temp_offset" class="form-control" value="-9" step="0.1">
-                <span class="setting-desc">Offset für Temperaturmessung</span>
+                <label for="temp_offset">Temperature Offset</label>
+                <input type="number" id="TEMP_OFFSET" class="form-control" value="-9" step="1">
+                <span class="setting-desc">Offset for temperature measurement</span>
             </div>
             <div class="setting-item">
-                <label for="hum_offset">Luftfeuchtigkeits Offset</label>
-                <input type="number" id="hum_offset" class="form-control" value="0" step="0.1">
-                <span class="setting-desc">Offset für Feuchtigkeitsmessung</span>
+                <label for="hum_offset">Humidity Offset</label>
+                <input type="number" id="HUM_OFFSET" class="form-control" value="0" step="1">
+                <span class="setting-desc">Offset for humidity measurement</span>
             </div>
         </div>
     </div>
 
     <!-- Brightness Settings -->
     <div class="content-card settings-section">
-        <h2>Helligkeits Einstellungen</h2>
+        <h2>Brightness Settings</h2>
         <div class="settings-grid">
             <div class="setting-item">
-                <label for="min_brightness">Minimale Helligkeit</label>
-                <input type="number" id="min_brightness" class="form-control" value="2" min="0" max="255">
-                <span class="setting-desc">Minimale Helligkeit für Auto-Brightness</span>
+                <label for="MIN_BRIGHTNESS">Minimum Brightness</label>
+                <input type="number" id="MIN_BRIGHTNESS" class="form-control" value="2" min="0" max="255">
+                <span class="setting-desc">Minimum brightness for auto-brightness</span>
             </div>
             <div class="setting-item">
-                <label for="max_brightness">Maximale Helligkeit</label>
-                <input type="number" id="max_brightness" class="form-control" value="180" min="0" max="255">
-                <span class="setting-desc">Maximale Helligkeit (Achtung: Überhitzungsgefahr!)</span>
+                <label for="MAX_BRIGHTNESS">Maximum Brightness</label>
+                <input type="number" id="MAX_BRIGHTNESS" class="form-control" value="180" min="0" max="255">
+                <span class="setting-desc">Maximum brightness (Warning: Risk of overheating!)</span>
             </div>
             <div class="setting-item">
-                <label for="ldr_gamma">LDR Gamma</label>
-                <input type="number" id="ldr_gamma" class="form-control" value="3.0" step="0.1">
-                <span class="setting-desc">Gamma-Korrektur für Helligkeitssteuerung</span>
+                <label for="LDR_GAMMA">LDR Gamma</label>
+                <input type="number" id="LDR_GAMMA" class="form-control" value="3.0" step="0.1">
+                <span class="setting-desc">Gamma correction for brightness control</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Settings -->
+    <div class="content-card settings-section">
+        <h2>App Settings</h2>
+        <div class="settings-grid">
+            <div class="setting-item">
+                <label>Active Apps</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="TIM">
+                        <span>Time</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="DAT">
+                        <span>Date</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="TEMP">
+                        <span>Temperature</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="HUM">
+                        <span>Humidity</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="BAT">
+                        <span>Battery</span>
+                    </label>
+                </div>
+            </div>
+            <div class="setting-item">
+                <label for="TFORMAT">Time Format</label>
+                <select id="TFORMAT" class="form-control">
+                    <option value="%H:%M:%S">24-hour with seconds</option>
+                    <option value="%l:%M:%S">12-hour with seconds</option>
+                    <option value="%H:%M">24-hour</option>
+                    <option value="%H %M">24-hour, blinking colon</option>
+                    <option value="%l:%M">12-hour</option>
+                    <option value="%l %M">12-hour, blinking colon</option>
+                    <option value="%l:%M %p">12-hour with AM/PM</option>
+                    <option value="%l %M %p">12-hour, blinking colon, AM/PM</option>
+                </select>
+                <span class="setting-desc">Format for time display</span>
+            </div>
+            <div class="setting-item">
+                <label for="DFORMAT">Date Format</label>
+                <select id="DFORMAT" class="form-control">
+                    <option value="%d.%m.%y">16.04.22 (Day.Month.Year)</option>
+                    <option value="%d.%m">16.04 (Day.Month)</option>
+                    <option value="%y-%m-%d">22-04-16 (Year-Month-Day)</option>
+                    <option value="%m-%d">04-16 (Month-Day)</option>
+                    <option value="%m/%d/%y">04/16/22 (Month/Day/Year)</option>
+                    <option value="%m/%d">04/16 (Month/Day)</option>
+                    <option value="%d/%m/%y">16/04/22 (Day/Month/Year)</option>
+                    <option value="%d/%m">16/04 (Day/Month)</option>
+                    <option value="%m-%d-%y">04-16-22 (Month-Day-Year)</option>
+                </select>
+                <span class="setting-desc">Format for date display</span>
             </div>
         </div>
     </div>
 
     <!-- Additional Settings -->
     <div class="content-card settings-section">
-        <h2>Weitere Einstellungen</h2>
+        <h2>Additional Settings</h2>
         <div class="settings-grid">
             <div class="setting-item">
-                <label for="ha_prefix">HomeAssistant Prefix</label>
-                <input type="text" id="ha_prefix" class="form-control" value="homeassistant">
-                <span class="setting-desc">Prefix für HomeAssistant Discovery</span>
+                <label for="HA_PREFIX">HomeAssistant Prefix</label>
+                <input type="text" id="HA_PREFIX" class="form-control" value="homeassistant">
+                <span class="setting-desc">Prefix for HomeAssistant Discovery</span>
             </div>
             <div class="setting-item">
-                <label for="stats_interval">Statistik Intervall</label>
-                <input type="number" id="stats_interval" class="form-control" value="10000" step="1000">
-                <span class="setting-desc">Intervall für Statistik-Updates (ms)</span>
+                <label for="STATS_INTERVAL">Statistics Interval</label>
+                <input type="number" id="STATS_INTERVAL" class="form-control" value="10000" step="1000">
+                <span class="setting-desc">Interval for statistics updates (ms)</span>
             </div>
             <div class="setting-item">
-                <label>Weitere Optionen</label>
+                <label>Additional Options</label>
                 <div class="checkbox-group">
                     <label class="checkbox-label">
-                        <input type="checkbox" id="debug_mode">
-                        <span>Debug Modus</span>
+                        <input type="checkbox" id="DEBUG_MODE">
+                        <span>Debug Mode</span>
                     </label>
                     <label class="checkbox-label">
-                        <input type="checkbox" id="dfplayer">
-                        <span>DFPlayer aktivieren</span>
+                        <input type="checkbox" id="DFPLAYER_ACTIVE">
+                        <span>Enable DFPlayer</span>
                     </label>
                     <label class="checkbox-label">
-                        <input type="checkbox" id="new_year">
-                        <span>Neujahrs-Animation</span>
+                        <input type="checkbox" id="NEWYEAR">
+                        <span>New Year Animation</span>
                     </label>
                     <label class="checkbox-label">
-                        <input type="checkbox" id="swap_buttons">
-                        <span>Tasten tauschen</span>
+                        <input type="checkbox" id="SWAP_BUTTONS">
+                        <span>Swap Buttons</span>
                     </label>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Network Settings -->
+    <div class="content-card settings-section">
+        <h2>Network Settings</h2>
+        <div class="settings-grid">
+            <div class="setting-item">
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="NET_STATIC">
+                        <span>Static IP</span>
+                    </label>
+                </div>
+            </div>
+            <div class="setting-item">
+                <label for="NET_IP">IP Address</label>
+                <input type="text" id="NET_IP" class="form-control">
+            </div>
+            <div class="setting-item">
+                <label for="NET_GW">Gateway</label>
+                <input type="text" id="NET_GW" class="form-control">
+            </div>
+            <div class="setting-item">
+                <label for="NET_SN">Subnet</label>
+                <input type="text" id="NET_SN" class="form-control">
+            </div>
+            <div class="setting-item">
+                <label for="NET_PDNS">Primary DNS</label>
+                <input type="text" id="NET_PDNS" class="form-control">
+            </div>
+            <div class="setting-item">
+                <label for="NET_SDNS">Secondary DNS</label>
+                <input type="text" id="NET_SDNS" class="form-control">
+            </div>
+        </div>
+    </div>
+
+    <!-- Authentication -->
+    <div class="content-card settings-section">
+        <h2>Authentication</h2>
+        <div class="settings-grid">
+            <div class="setting-item">
+                <label for="AUTH_USER">Username</label>
+                <input type="text" id="AUTH_USER" class="form-control">
+            </div>
+            <div class="setting-item">
+                <label for="AUTH_PASS">Password</label>
+                <input type="password" id="AUTH_PASS" class="form-control">
+            </div>
+        </div>
+    </div>
+
+    <!-- General Text Settings -->
+    <div class="content-card settings-section">
+        <h2>Text Settings</h2>
+        <div class="settings-grid">
+            <div class="setting-item">
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="UPPER">
+                        <span>Uppercase Letters</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Time & Calendar Settings -->
+    <div class="content-card settings-section">
+        <h2>Time & Calendar Settings</h2>
+        <div class="settings-grid">
+            <div class="setting-item">
+                <label for="TMODE">Time Mode</label>
+                <select id="TMODE" class="form-control">
+                    <option value="0">24 Hour</option>
+                    <option value="1">12 Hour</option>
+                </select>
+            </div>
+            <div class="setting-item">
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="WD">
+                        <span>Show Weekday</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="SOM">
+                        <span>Week starts on Monday</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="CEL">
+                        <span>Temperature in Celsius</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sound Settings -->
+    <div class="content-card settings-section">
+        <h2>Sound Settings</h2>
+        <div class="settings-grid">
+            <div class="setting-item">
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="SOUND">
+                        <span>Sound Active</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="BUZ_VOL">
+                        <span>Buzzer Volume</span>
+                    </label>
+                </div>
+            </div>
+            <div class="setting-item">
+                <label for="VOL">Sound Volume</label>
+                <input type="number" id="VOL" class="form-control" min="0" max="30" value="15">
+            </div>
+        </div>
+    </div>
+
+    <!-- Effect Settings -->
+    <div class="content-card settings-section">
+        <h2>Effect Settings</h2>
+        <div class="settings-grid">
+            <div class="setting-item">
+                <label for="B_EFFECT">Background Effect</label>
+                <select id="B_EFFECT" class="form-control">
+                    <option value="0">None</option>
+                    <option value="1">Effect 1</option>
+                    <!-- Add more effects as needed -->
+                </select>
+            </div>
+            <div class="setting-item">
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="ATRANS">
+                        <span>Automatic Transition</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Battery Settings -->
+    <div class="content-card settings-section">
+        <h2>Battery Settings</h2>
+        <div class="settings-grid">
+            <div class="setting-item">
+                <label for="MIN_BATTERY">Minimum Battery Voltage</label>
+                <input type="number" id="MIN_BATTERY" class="form-control" step="0.1">
+            </div>
+            <div class="setting-item">
+                <label for="MAX_BATTERY">Maximum Battery Voltage</label>
+                <input type="number" id="MAX_BATTERY" class="form-control" step="0.1">
+            </div>
+        </div>
+    </div>
+
+    <!-- Hardware Settings -->
+    <div class="content-card settings-section">
+        <h2>Hardware Settings</h2>
+        <div class="settings-grid">
+            <div class="setting-item">
+                <label for="LDR_FACTOR">LDR Factor</label>
+                <input type="number" id="LDR_FACTOR" class="form-control" step="0.1">
+            </div>
+            <div class="setting-item">
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="LDR_ON_GROUND">
+                        <span>LDR on Ground</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="BLOCKN">
+                        <span>Block Navigation</span>
+                    </label>
+                </div>
+            </div>
+            <div class="setting-item">
+                <label for="BUTTON_CALLBACK">Button Callback</label>
+                <input type="text" id="BUTTON_CALLBACK" class="form-control">
             </div>
         </div>
     </div>
@@ -149,11 +538,14 @@
     <div class="settings-actions">
         <button class="btn btn-secondary">
             <i data-feather="refresh-cw"></i>
-            Zurücksetzen
+            Reset
         </button>
         <button class="btn">
             <i data-feather="save"></i>
-            Speichern
+            Save
         </button>
     </div>
+<!-- Toast Container -->
+<div id="toast-container"></div>
+    
 </div>
