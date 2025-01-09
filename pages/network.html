@@ -1,0 +1,143 @@
+<div id="network" class="page">
+
+
+    <div class="content-card settings-section">
+        <div class="section-header">
+            <h2><i class="fas fa-network-wired"></i> Network Configuration</h2>
+            <p class="section-description">Configure the device's network settings. Changes require a restart to take effect.</p>
+        </div>
+
+        <form id="networkForm" class="network-form">
+            <!-- Connection Type -->
+            <div class="form-section">
+                <div class="setting-item network-settings">
+                    <div class="checkbox-wrapper">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="NET_STATIC">
+                            <span class="slider"></span>
+                        </label>
+                        <div class="setting-label">
+                            <span>Static IP Configuration</span>
+                            <small>Enable to manually configure network settings</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- IP Configuration -->
+            <div class="form-section ip-config">
+                <h3>IP Configuration</h3>
+                <div class="settings-grid">
+                    <div class="setting-item ip-setting">
+                        <label for="NET_IP">
+                            <i class="fas fa-laptop"></i> IP Address
+                            <span class="tooltip" data-tip="Device's static IP address">?</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="text" 
+                                   id="NET_IP" 
+                                   class="form-control" 
+                                   pattern="\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b" 
+                                   placeholder="192.168.1.100"
+                                   data-validate="ip"
+                                   disabled>
+                            <span class="validation-feedback"></span>
+                        </div>
+                    </div>
+
+                    <div class="setting-item ip-setting">
+                        <label for="NET_SN">
+                            <i class="fas fa-mask"></i> Subnet Mask
+                            <span class="tooltip" data-tip="Network subnet mask (e.g. 255.255.255.0)">?</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="text" 
+                                   id="NET_SN" 
+                                   class="form-control" 
+                                   pattern="\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b" 
+                                   placeholder="255.255.255.0"
+                                   data-validate="ip"
+                                   disabled>
+                            <span class="validation-feedback"></span>
+                        </div>
+                    </div>
+
+                    <div class="setting-item ip-setting">
+                        <label for="NET_GW">
+                            <i class="fas fa-router"></i> Gateway
+                            <span class="tooltip" data-tip="Network gateway address">?</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="text" 
+                                   id="NET_GW" 
+                                   class="form-control" 
+                                   pattern="\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b" 
+                                   placeholder="192.168.1.1"
+                                   data-validate="ip"
+                                   disabled>
+                            <span class="validation-feedback"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DNS Configuration -->
+            <div class="form-section dns-config">
+                <h3>DNS Configuration</h3>
+                <div class="settings-grid">
+                    <div class="setting-item ip-setting">
+                        <label for="NET_PDNS">
+                            <i class="fas fa-dns"></i> Primary DNS
+                            <span class="tooltip" data-tip="Primary DNS server address">?</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="text" 
+                                   id="NET_PDNS" 
+                                   class="form-control" 
+                                   pattern="\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b" 
+                                   placeholder="8.8.8.8"
+                                   data-validate="ip"
+                                   disabled>
+                            <span class="validation-feedback"></span>
+                        </div>
+                    </div>
+
+                    <div class="setting-item ip-setting">
+                        <label for="NET_SDNS">
+                            <i class="fas fa-dns"></i> Secondary DNS
+                            <span class="tooltip" data-tip="Secondary DNS server address">?</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="text" 
+                                   id="NET_SDNS" 
+                                   class="form-control" 
+                                   pattern="\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b" 
+                                   placeholder="8.8.4.4"
+                                   data-validate="ip"
+                                   disabled>
+                            <span class="validation-feedback"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-actions">
+                <button type="button" class="btn btn-secondary" id="resetForm">
+                    <i class="fas fa-undo"></i>
+                    Reset
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                    Save Changes
+                </button>
+            </div>
+        </form>
+
+        <div class="settings-info">
+            <div class="info-card">
+                <i class="fas fa-info-circle"></i>
+                <p>After saving, the device will need to restart to apply the new network configuration.</p>
+            </div>
+        </div>
+    </div>
+</div>

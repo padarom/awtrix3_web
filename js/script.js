@@ -1,5 +1,3 @@
-
-
 // Sidebar und Menü-Toggle
 const menuToggle = document.getElementById("menu-toggle");
 const sidebar = document.querySelector(".sidebar");
@@ -27,6 +25,14 @@ document.querySelectorAll('.nav-item').forEach(nav => {
 
         const page = nav.getAttribute('data-page');
         await loadPage(page); // Dynamische Seite laden
+    });
+});
+
+// Add handler for nav groups
+document.querySelectorAll('.nav-item-parent').forEach(item => {
+    item.addEventListener('click', () => {
+        const group = item.closest('.nav-group');
+        group.classList.toggle('open');
     });
 });
 

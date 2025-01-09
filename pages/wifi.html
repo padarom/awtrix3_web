@@ -1,29 +1,97 @@
- <!-- WLAN Einstellungen -->
- <div id="wifi" class="page">
-    <header class="header">
-        <h1>WLAN Einstellungen</h1>
-    </header>
-    <div class="content-card">
-        <form id="wifiForm">
-            <div class="form-group">
-                <label for="ssid">WLAN Name (SSID)</label>
-                <input type="text" id="ssid" class="form-control" placeholder="Ihr WLAN-Netzwerk" required>
+<div id="wifi" class="page">
+    <div class="content-card settings-section">
+        <div class="section-header">
+            <h2><i class="fas fa-wifi"></i> Wireless Configuration</h2>
+            <p class="section-description">Configure your device's wireless network connection settings.</p>
+        </div>
+
+        <!-- Current Connection Info -->
+        <div class="form-section">
+            <h3>Current Connection</h3>
+            <div class="connection-info">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Network Name</span>
+                        <span class="info-value" id="currentSSID">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">IP Address</span>
+                        <span class="info-value" id="currentIP">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Signal Strength</span>
+                        <span class="info-value" id="signalStrength">-</span>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="password">WLAN Passwort</label>
-                <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+        </div>
+
+        <!-- Network Configuration -->
+        <form id="wifiForm" class="settings-form">
+            <div class="form-section">
+                <h3>Network Settings</h3>
+                <div class="setting-item">
+                    <label for="ssid">
+                        <i class="fas fa-broadcast-tower"></i> Network Name (SSID)
+                        <span class="tooltip" data-tip="The name of your wireless network">?</span>
+                    </label>
+                    <div class="input-wrapper">
+                        <input type="text" 
+                               id="ssid" 
+                               class="form-control" 
+                               placeholder="Enter network name"
+                               required
+                               data-validate="required">
+                        <span class="validation-feedback"></span>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <label for="password">
+                        <i class="fas fa-key"></i> Password
+                        <span class="tooltip" data-tip="Your network's security key">?</span>
+                    </label>
+                    <div class="input-wrapper password-wrapper">
+                        <input type="password" 
+                               id="password" 
+                               class="form-control" 
+                               placeholder="Enter network password"
+                               required
+                               data-validate="required">
+                        <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <span class="validation-feedback"></span>
+                    </div>
+                </div>
             </div>
-            <button type="submit" class="btn">
-                <i data-feather="save"></i>
-                Speichern
-            </button>
+
+            <div class="settings-actions">
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                    Connect
+                </button>
+            </div>
         </form>
-        <div class="connection-status">
-            <div class="status-badge success">
-                <i data-feather="check-circle"></i>
-                Verbunden
+
+        <!-- Available Networks -->
+        <div class="form-section networks-list" id="networksContainer" style="display: none;">
+            <h3>Available Networks</h3>
+            <div class="networks-grid" id="networksList">
+                <!-- Networks will be populated here -->
             </div>
-            <p class="info-text">Verbunden mit "Mein WLAN" | IP: 192.168.1.100</p>
+        </div>
+
+        <div class="settings-info">
+            <div class="info-card">
+                <i class="fas fa-info-circle"></i>
+                <p>After connecting to a new network, the device may need to restart. Make sure you're in range of the selected network.</p>
+            </div>
         </div>
     </div>
 </div>
+
+<script src="js/wifi.js"></script>
+</body>
+</html>

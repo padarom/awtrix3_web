@@ -43,14 +43,27 @@
                 <i class="fa-solid fa-gauge"></i>
                 Dashboard
             </a>
-            <a class="nav-item" data-page="wifi">
-                <i class="fa-solid fa-wifi"></i>
-                WLAN
-            </a>
-            <a class="nav-item" data-page="mqtt">
-                <i class="fa-solid fa-server"></i>
-                MQTT
-            </a>
+            <div class="nav-group">
+                <div class="nav-item nav-item-parent">
+                    <i class="fa-solid fa-network-wired"></i>
+                    Network
+                    <i class="fa-solid fa-chevron-down nav-arrow"></i>
+                </div>
+                <div class="nav-subitems">
+                    <a class="nav-item sub-item" data-page="wifi">
+                        <i class="fa-solid fa-wifi"></i>
+                        WLAN
+                    </a>
+                    <a class="nav-item sub-item" data-page="mqtt">
+                        <i class="fa-solid fa-server"></i>
+                        MQTT
+                    </a>
+                    <a class="nav-item sub-item" data-page="network">
+                        <i class="fa-solid fa-globe"></i>
+                        Network Settings
+                    </a>
+                </div>
+            </div>
             <a class="nav-item" data-page="time">
                 <i class="fa-regular fa-clock"></i>
                 Zeit
