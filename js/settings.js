@@ -76,6 +76,16 @@ function initializeSettings() {
             }
         });
     });
+
+    // Handle static IP toggle
+    const staticIpToggle = document.getElementById('NET_STATIC');
+    const ipInputs = document.querySelectorAll('.ip-setting input');
+    
+    staticIpToggle?.addEventListener('change', (e) => {
+        ipInputs.forEach(input => {
+            input.disabled = !e.target.checked;
+        });
+    });
 }
 
 // Show or hide loading indicator
@@ -142,6 +152,14 @@ function populateSettings(settings) {
             element.value = value;
         }
     });
+
+    // Handle static IP fields
+    if ('NET_STATIC' in settings) {
+        const ipInputs = document.querySelectorAll('.ip-setting input');
+        ipInputs.forEach(input => {
+            input.disabled = !settings.NET_STATIC;
+        });
+    }
 }
 
 // Handle setting changes

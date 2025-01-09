@@ -1073,3 +1073,10 @@ canvas {
 
 /* ...existing code... */
 
+.ip-setting input:disabled {
+    background-color: #f1f5f9;
+    cursor: not-allowed;
+}
+
+/* ...existing code... */
+

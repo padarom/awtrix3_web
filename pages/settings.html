@@ -356,7 +356,7 @@
     <div class="content-card settings-section">
         <h2>Network Settings</h2>
         <div class="settings-grid">
-            <div class="setting-item">
+            <div class="setting-item network-settings">
                 <div class="checkbox-group">
                     <label class="checkbox-label">
                         <input type="checkbox" id="NET_STATIC">
@@ -364,25 +364,25 @@
                     </label>
                 </div>
             </div>
-            <div class="setting-item">
+            <div class="setting-item ip-setting">
                 <label for="NET_IP">IP Address</label>
-                <input type="text" id="NET_IP" class="form-control">
+                <input type="text" id="NET_IP" class="form-control" disabled>
             </div>
-            <div class="setting-item">
+            <div class="setting-item ip-setting">
                 <label for="NET_GW">Gateway</label>
-                <input type="text" id="NET_GW" class="form-control">
+                <input type="text" id="NET_GW" class="form-control" disabled>
             </div>
-            <div class="setting-item">
+            <div class="setting-item ip-setting">
                 <label for="NET_SN">Subnet</label>
-                <input type="text" id="NET_SN" class="form-control">
+                <input type="text" id="NET_SN" class="form-control" disabled>
             </div>
-            <div class="setting-item">
+            <div class="setting-item ip-setting">
                 <label for="NET_PDNS">Primary DNS</label>
-                <input type="text" id="NET_PDNS" class="form-control">
+                <input type="text" id="NET_PDNS" class="form-control" disabled>
             </div>
-            <div class="setting-item">
+            <div class="setting-item ip-setting">
                 <label for="NET_SDNS">Secondary DNS</label>
-                <input type="text" id="NET_SDNS" class="form-control">
+                <input type="text" id="NET_SDNS" class="form-control" disabled>
             </div>
         </div>
     </div>
@@ -422,11 +422,17 @@
         <h2>Time & Calendar Settings</h2>
         <div class="settings-grid">
             <div class="setting-item">
-                <label for="TMODE">Time Mode</label>
+                <label for="TMODE">Time Display Mode</label>
                 <select id="TMODE" class="form-control">
-                    <option value="0">24 Hour</option>
-                    <option value="1">12 Hour</option>
+                    <option value="0">Classic</option>
+                    <option value="1">Time + Calendar (Bottom weekdays)</option>
+                    <option value="2">Time + Calendar (Top weekdays)</option>
+                    <option value="3">Time + Alternative Calendar (Bottom weekdays)</option>
+                    <option value="4">Time + Alternative Calendar (Top weekdays)</option>
+                    <option value="5">Big Time</option>
+                    <option value="6">Binary Clock</option>
                 </select>
+                <span class="setting-desc">Choose how time and calendar information is displayed</span>
             </div>
             <div class="setting-item">
                 <div class="checkbox-group">
