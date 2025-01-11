@@ -39,6 +39,21 @@ document.querySelectorAll('.nav-item-parent').forEach(item => {
 // Dynamische Seiten laden
 async function loadPage(pageId) {
     try {
+        // Special handling for creator page
+        if (pageId === 'creator') {
+            const content = document.getElementById('content');
+            if (content) {
+                content.innerHTML = `
+                    <iframe 
+                        src="piskel/index.html" 
+                        style="width: 100%; height: 100vh; border: none;"
+                        allowfullscreen>
+                    </iframe>`;
+                return;
+            }
+        }
+
+        // Normal page loading for all other pages
         const response = await fetch(`pages/${pageId}.html`);
         if (!response.ok) throw new Error(`Fehler beim Laden der Seite: ${pageId}`);
         const html = await response.text();
