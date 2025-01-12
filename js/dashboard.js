@@ -24,6 +24,7 @@ function updateRecordingTime() {
 // Fetch und Canvas-Rendering-Funktion
 function j() {
     fetch('/api/screen')
+        .then(response => {console.log(response); })
         .then(response => response.json())
         .then(data => {
             if (!d) return; // Canvas nicht verfügbar
