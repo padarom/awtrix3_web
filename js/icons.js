@@ -144,23 +144,25 @@ async function formDataToObject(formData) {
         
         return {
             isFile: true,
-            name: formData.get('file') ? file.name : 'ICONS/' + formData.get('upfile').name,
+            // Wichtig: Hier nur den Dateinamen ohne ICONS/ Präfix
+            name: file.name,
             data: base64
         };
     }
     return Object.fromEntries(formData);
 }
 
-// Update uploadIcon to fix path
+// Update uploadIcon to handle correct path
 async function uploadIcon(file) {
     const formData = new FormData();
+    // Nur den Dateinamen ohne Pfad verwenden
     formData.append('file', file, file.name);
 
     try {
         const formDataObj = await formDataToObject(formData);
-        // Use correct path format
+        // Explizit den ICONS Pfad hinzufügen
         if (formDataObj.isFile) {
-            formDataObj.name = `${ICONS_PATH}/${file.name}`;
+            formDataObj.path = `${ICONS_PATH}/${formDataObj.name}`;
         }
         
         const response = await proxyFetch(isIframe ? '/edit' : `${BASE_URL}/edit`, {
@@ -328,7 +330,7 @@ async function downloadLametricImage() {
     }
 }
 
-// Update sendBlob to fix path
+// Update sendBlob to use the same format
 async function sendBlob(blob, iconId, extension) {
     const formData = new FormData();
     const fileName = iconId + extension;
@@ -337,7 +339,7 @@ async function sendBlob(blob, iconId, extension) {
     try {
         const formDataObj = await formDataToObject(formData);
         if (formDataObj.isFile) {
-            formDataObj.name = `${ICONS_PATH}/${fileName}`;
+            formDataObj.path = `${ICONS_PATH}/${fileName}`;
         }
         
         const response = await proxyFetch(isIframe ? '/edit' : `${BASE_URL}/edit`, {
