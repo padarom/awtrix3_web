@@ -1,6 +1,14 @@
 import { GIFEncoder, quantize, applyPalette } from 'https://unpkg.com/gifenc@1.0.3';
 
-const BASE_URL = 'http://192.168.178.111';
+// Replace const BASE_URL with dynamic version
+const BASE_URL = (() => {
+    if (window !== window.parent) {
+        // We're in an iframe, use relative URLs
+        return '';
+    }
+    // Direct access, use saved IP or default
+    return `http://${localStorage.getItem('espIp') || '192.168.178.111'}`;
+})();
 
 const c = document.getElementById('c');
 let d, w = 1052, h = 260, e, f = false, g = performance.now();
@@ -28,13 +36,18 @@ const isIframe = window !== window.parent;
 
 // Modified proxyFetch function
 function proxyFetch(url, options = {}) {
+    // Remove the full URL if we're in an iframe
+    const targetUrl = window !== window.parent ? url.replace(BASE_URL, '') : url;
+    
     // If not in iframe, make direct request
-    if (!isIframe) {
-        console.log('Direct request:', url);
-        return fetch(url, options).then(res => res.json()).catch(err => {
-            console.error('Direct fetch error:', err);
-            throw err;
-        });
+    if (window === window.parent) {
+        console.log('Direct request:', targetUrl);
+        return fetch(targetUrl, options)
+            .then(res => options.method === 'POST' ? {success: true} : res.json())
+            .catch(err => {
+                console.error('Direct fetch error:', err);
+                throw err;
+            });
     }
 
     return new Promise((resolve, reject) => {
