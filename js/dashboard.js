@@ -23,8 +23,19 @@ function updateRecordingTime() {
     recordTimeElement.textContent = ` (${minutes}:${seconds.toString().padStart(2, '0')})`;
 }
 
-// Add this at the top of the file
+// Check if we're in an iframe
+const isIframe = window !== window.parent;
+
+// Modified proxyFetch function
 function proxyFetch(url, options = {}) {
+    // If not in iframe, make direct request
+    if (!isIframe) {
+        return fetch(url, options).then(res => res.json()).catch(err => {
+            console.error('Direct fetch error:', err);
+            throw err;
+        });
+    }
+
     return new Promise((resolve, reject) => {
         const messageId = Date.now().toString();
         
@@ -35,11 +46,19 @@ function proxyFetch(url, options = {}) {
             if (event.data.success) {
                 resolve(event.data.data);
             } else {
+                console.error('Proxy fetch error:', event.data.error);
                 reject(new Error(event.data.error));
             }
         };
         
         window.addEventListener('message', handler);
+        
+        console.log('Sending postMessage:', {
+            id: messageId,
+            url,
+            method: options.method || 'GET',
+            body: options.body
+        });
         
         window.parent.postMessage({
             id: messageId,
