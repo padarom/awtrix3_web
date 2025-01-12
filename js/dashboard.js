@@ -329,8 +329,5 @@ async function initializeDashboard() {
 }
 
 // Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', initializeDashboard);
-
-// Initialisierung
-j(); // Startet das Rendern der Canvas-Daten
+initializeDashboard();
 
