@@ -90,16 +90,6 @@ function initializeSettings() {
         input.addEventListener('change', () => {
             const [r, g, b] = Array.from(tempInputs).map(input => parseInt(input.value));
             const colorValue = (r << 16) | (g << 8) | b;
-            updateSetting('C_CORRECTION', colorValue);
-        });
-    });
-
-    // Special handler for color temperature
-    const tempInputs = document.querySelectorAll('.color-setting')[1].querySelectorAll('input');
-    tempInputs.forEach(input => {
-        input.addEventListener('change', () => {
-            const [r, g, b] = Array.from(tempInputs).map(input => parseInt(input.value));
-            const colorValue = (r << 16) | (g << 8) | b;
             updateSetting('C_TEMPERATURE', colorValue);
         });
     });
