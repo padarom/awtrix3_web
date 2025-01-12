@@ -93,15 +93,13 @@ document.getElementById("downloadpng")?.addEventListener("click", () => {
 });
 
 document.getElementById("nextapp")?.addEventListener("click", () => {
-    const a = new XMLHttpRequest();
-    a.open("POST", `${BASE_URL}/api/nextapp`, true);
-    a.send();
+    proxyFetch(`${BASE_URL}/api/nextapp`, { method: 'POST' })
+        .catch(error => console.error("Error changing app:", error));
 });
 
 document.getElementById("previousapp")?.addEventListener("click", () => {
-    const a = new XMLHttpRequest();
-    a.open("POST", `${BASE_URL}/api/previousapp`, true);
-    a.send();
+    proxyFetch(`${BASE_URL}/api/previousapp`, { method: 'POST' })
+        .catch(error => console.error("Error changing app:", error));
 });
 
 document.getElementById("startgif")?.addEventListener("click", async function () {
