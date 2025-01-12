@@ -12,11 +12,30 @@ self.addEventListener('fetch', (event) => {
     const url = new URL(event.request.url);
     console.log('Intercepted request:', url.pathname);
     
-    // Check if the request is for the ESP API, regardless of the base path
-    if (url.pathname.includes('/api/')) {
-        event.respondWith(
-            handleApiRequest(event.request, url.pathname.substring(url.pathname.indexOf('/api/')))
-        );
+    // Check if the request is for the ESP API, checking both paths
+    if (url.pathname.includes('/api/') || url.pathname.includes('/awtrix3_web_test/api/')) {
+        // Handle OPTIONS requests for CORS
+        if (event.request.method === 'OPTIONS') {
+            event.respondWith(
+                new Response(null, {
+                    status: 204,
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+                        'Access-Control-Allow-Headers': 'Content-Type'
+                    }
+                })
+            );
+            return;
+        }
+
+        const apiPath = url.pathname.includes('/awtrix3_web_test/api/') 
+            ? url.pathname.substring(url.pathname.indexOf('/api/'))
+            : url.pathname;
+            
+        console.log('API path extracted:', apiPath);
+        
+        event.respondWith(handleApiRequest(event.request, apiPath));
         return;
     }
     
@@ -35,50 +54,55 @@ async function handleApiRequest(request, path) {
         const espUrl = `http://${espIpAddress}${path}`;
         console.log('Proxying request to:', espUrl);
 
-        // Clone the request with the new URL
-        const modifiedRequest = new Request(espUrl, {
+        // Use fetch with no-cors mode for mixed content
+        const response = await fetch(espUrl, {
             method: request.method,
-            headers: new Headers({
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }),
-            body: request.method !== 'GET' ? request.body : undefined,
-            mode: 'cors'
-        });
-
-        const response = await fetch(modifiedRequest);
-        
-        // Stream the response to handle large responses better
-        const reader = response.body.getReader();
-        const stream = new ReadableStream({
-            start(controller) {
-                return pump();
-                function pump() {
-                    return reader.read().then(({done, value}) => {
-                        if (done) {
-                            controller.close();
-                            return;
-                        }
-                        controller.enqueue(value);
-                        return pump();
-                    });
-                }
-            }
-        });
-
-        return new Response(stream, {
-            status: response.status,
-            statusText: response.statusText,
+            mode: 'no-cors',
+            cache: 'no-cache',
             headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Content-Type': 'application/json'
+                'Accept': '*/*'
             }
         });
+
+        // For no-cors responses, we need to handle the data differently
+        let responseData;
+        try {
+            // Try to get response as JSON
+            responseData = await response.clone().json();
+        } catch (e) {
+            try {
+                // If JSON fails, try to get as text
+                responseData = await response.text();
+                try {
+                    // Try to parse text as JSON
+                    responseData = JSON.parse(responseData);
+                } catch (e) {
+                    // If parsing fails, return as-is
+                    console.log('Response is not JSON:', responseData);
+                }
+            } catch (e) {
+                // If text fails, try to get as array buffer
+                responseData = await response.arrayBuffer();
+            }
+        }
+
+        return new Response(JSON.stringify(responseData), {
+            status: 200,
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type'
+            }
+        });
+
     } catch (error) {
         console.error('Proxy error:', error);
+        // Return a more detailed error response
         return new Response(JSON.stringify({ 
             error: 'Failed to connect to ESP',
-            details: error.message 
+            details: error.message,
+            path: path
         }), {
             status: 502,
             headers: {

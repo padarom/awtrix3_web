@@ -23,7 +23,7 @@ function updateRecordingTime() {
 
 // Fetch und Canvas-Rendering-Funktion
 function j() {
-    fetch('/awtrix3_web_test/api/screen')
+    fetch('/api/screen')  // Verwende den relativen Pfad
         .then(async response => {
             console.log('Screen API response:', response);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -73,11 +73,11 @@ document.getElementById("downloadpng")?.addEventListener("click", () => {
 });
 
 document.getElementById("nextapp")?.addEventListener("click", () => {
-    fetch('/awtrix3_web_test/api/nextapp', { method: 'POST' });
+    fetch('/api/nextapp', { method: 'POST' });
 });
 
 document.getElementById("previousapp")?.addEventListener("click", () => {
-    fetch('/awtrix3_web_test/api/previousapp', { method: 'POST' });
+    fetch('/api/previousapp', { method: 'POST' });
 });
 
 document.getElementById("startgif")?.addEventListener("click", async function () {
@@ -133,7 +133,7 @@ function formatBytes(bytes) {
 
 async function fetchAndDisplayStats() {
     try {
-        const response = await fetch('/awtrix3_web_test/api/stats');
+        const response = await fetch('/api/stats');
         if (!response.ok) throw new Error('Failed to load statistics');
         
         const stats = await response.json();
