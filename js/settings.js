@@ -244,9 +244,10 @@ async function updateSetting(key, value) {
             [key]: value
         };
 
+        console.log('Sending setting update:', settingsData);
+
         // Use relative URL if in iframe
         const url = isIframe ? '/api/system' : `${BASE_URL}/api/system`;
-        
         const response = await proxyFetch(url, {
             method: 'POST',
             headers: {
