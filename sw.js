@@ -70,37 +70,42 @@ async function handleApiRequest(request, path) {
         const espUrl = `http://${espIpAddress}${path}`;
         console.log('SW: Proxying request to:', espUrl);
 
-        // Create a simple XMLHttpRequest to bypass CORS
-        const data = await new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest();
-            xhr.open(request.method, espUrl, true);
-            
-            xhr.onload = () => {
-                if (xhr.status >= 200 && xhr.status < 300) {
-                    try {
-                        const response = xhr.responseText;
-                        console.log('SW: Raw response:', response);
-                        resolve(response);
-                    } catch (e) {
-                        console.error('SW: Parse error:', e);
-                        reject(e);
-                    }
-                } else {
-                    reject(new Error(`HTTP Error: ${xhr.status}`));
-                }
-            };
-            
-            xhr.onerror = () => {
-                console.error('SW: XHR error:', xhr.statusText);
-                reject(new Error('Network error'));
-            };
-
-            xhr.send();
+        // Use fetch with modified options
+        const response = await fetch(espUrl, {
+            method: request.method,
+            headers: {
+                'Accept': '*/*',
+                'Content-Type': 'application/json'
+            },
+            mode: 'cors',
+            cache: 'no-cache',
+            credentials: 'omit',
+            redirect: 'follow'
         });
 
-        console.log('SW: Response data:', data);
+        console.log('SW: Response from ESP:', {
+            status: response.status,
+            type: response.type,
+            headers: Array.from(response.headers.entries())
+        });
 
-        return new Response(data, {
+        // Read the response as an array buffer
+        const buffer = await response.arrayBuffer();
+        const text = new TextDecoder().decode(buffer);
+        console.log('SW: Response text:', text.substring(0, 100)); // Log first 100 chars
+
+        // Try to parse as JSON if possible
+        let data;
+        try {
+            data = JSON.parse(text);
+            console.log('SW: Parsed JSON data:', data);
+        } catch (e) {
+            console.log('SW: Not JSON data, using raw text');
+            data = text;
+        }
+
+        // Return the processed response
+        return new Response(JSON.stringify(data), {
             status: 200,
             headers: {
                 'Content-Type': 'application/json',
