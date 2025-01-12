@@ -2,12 +2,8 @@ import { GIFEncoder, quantize, applyPalette } from 'https://unpkg.com/gifenc@1.0
 
 // Replace const BASE_URL with dynamic version
 const BASE_URL = (() => {
-    if (window !== window.parent) {
-        // We're in an iframe, use relative URLs
-        return '';
-    }
-    // Direct access, use saved IP or default
-    return `http://${localStorage.getItem('espIp') || '192.168.178.111'}`;
+    const espIp = localStorage.getItem('espIp') || '192.168.178.111';
+    return `http://${espIp}`;
 })();
 
 const c = document.getElementById('c');
