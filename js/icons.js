@@ -99,15 +99,35 @@ async function loadIconsFromESP() {
     }
 }
 
-// Update uploadIcon to use relative URL in iframe
+// Helper function to convert FormData to a plain object
+async function formDataToObject(formData) {
+    const file = formData.get('file') || formData.get('upfile');
+    if (file instanceof File || file instanceof Blob) {
+        const base64 = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(file);
+        });
+        
+        return {
+            isFile: true,
+            name: formData.get('file') ? file.name : 'ICONS/' + formData.get('upfile').name,
+            data: base64
+        };
+    }
+    return Object.fromEntries(formData);
+}
+
+// Update uploadIcon to handle FormData conversion
 async function uploadIcon(file) {
     const formData = new FormData();
     formData.append('file', file, ICONS_PATH + '/' + file.name);
 
     try {
+        const formDataObj = await formDataToObject(formData);
         await proxyFetch(isIframe ? '/edit' : `${BASE_URL}/edit`, {
             method: 'POST',
-            body: formData
+            body: formDataObj
         });
 
         showToast('Icon uploaded successfully', 'success');
@@ -265,15 +285,16 @@ async function downloadLametricImage() {
     }
 }
 
-// Update sendBlob to use proxyFetch and relative URLs
+// Update sendBlob to handle FormData conversion
 async function sendBlob(blob, iconId, extension) {
     const formData = new FormData();
     formData.append("upfile", blob, "ICONS/" + iconId + extension);
 
     try {
+        const formDataObj = await formDataToObject(formData);
         await proxyFetch(isIframe ? '/edit' : `${BASE_URL}/edit`, {
             method: 'POST',
-            body: formData
+            body: formDataObj
         });
         
         showToast('Icon erfolgreich gespeichert', 'success');
