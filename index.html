@@ -25,9 +25,8 @@
 <body>
     <script>
         // Check if we're loaded directly from github.io
-        if (window.location.hostname === 'blueforcer.github.io') {
-            // Redirect to local ESP if available, otherwise prompt for IP
-            const checkLocal = async () => {
+        (function() {
+            if (window.location.hostname === 'blueforcer.github.io') {
                 const savedIp = localStorage.getItem('espIp');
                 if (savedIp) {
                     window.location.href = `http://${savedIp}/`;
@@ -38,9 +37,8 @@
                         window.location.href = `http://${ip}/`;
                     }
                 }
-            };
-            checkLocal();
-        }
+            }
+        })();
     </script>
     <!-- Overlay für das Menü -->
     <div class="overlay" id="overlay"></div>
