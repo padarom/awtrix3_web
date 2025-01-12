@@ -9,44 +9,6 @@
     <!--link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Blueforcer/awtrix3_web_test/css/style.css"-->
     <!-- For development -->
     <link rel="stylesheet" href="css/style.css">
-    <script>
-        // Service Worker Code
-        async function initializeServiceWorker(espIpAddress) {
-            if ('serviceWorker' in navigator) {
-                try {
-                    // Bei GitHub Pages müssen wir den korrekten Basispfad verwenden
-                    const swPath = '/sw.js'; // Pfad angepasst für GitHub Pages
-                    const registration = await navigator.serviceWorker.register(swPath);
-                    
-                    await navigator.serviceWorker.ready;
-                    
-                    if (registration.active) {
-                        registration.active.postMessage({
-                            type: 'SET_ESP_IP',
-                            ip: espIpAddress
-                        });
-                    }
-                    
-                    console.log('Service Worker erfolgreich registriert');
-                } catch (error) {
-                    console.error('Service Worker Registrierung fehlgeschlagen:', error);
-                }
-            }
-        }
-
-        // Beim Laden der Seite ausführen
-        document.addEventListener('DOMContentLoaded', () => {
-            const savedIp = localStorage.getItem('espIpAddress');
-            if (savedIp) {
-                initializeServiceWorker(savedIp);
-            } else {
-                // Standardmäßig die IP verwenden oder vom Benutzer abfragen
-                const defaultIp = '192.168.20.210';
-                localStorage.setItem('espIpAddress', defaultIp);
-                initializeServiceWorker(defaultIp);
-            }
-        });
-    </script>
     <script src="js/script.js" defer></script>
     <!--script src="https://cdn.jsdelivr.net/gh/Blueforcer/awtrix3_web_test/js/script.js" defer></script-->
 
