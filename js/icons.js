@@ -54,22 +54,35 @@ function proxyFetch(url, options = {}) {
     });
 }
 
-// Modified getProxiedImage function to handle both blob and base64
+// Modified getProxiedImage function to handle image fetching
 async function getProxiedImage(url) {
     if (!isIframe) return url;
     
     try {
-        const response = await proxyFetch(url, {
+        // Create img element for base64 response
+        const message = {
+            id: Date.now().toString(),
+            url,
             method: 'GET',
-            headers: {
-                'Accept': 'image/*'
-            }
+            isImage: true // Add flag to indicate image request
+        };
+        
+        const response = await new Promise((resolve, reject) => {
+            const handler = (event) => {
+                if (event.data.id !== message.id) return;
+                window.removeEventListener('message', handler);
+                if (event.data.success) {
+                    resolve(event.data.data);
+                } else {
+                    reject(new Error(event.data.error));
+                }
+            };
+            
+            window.addEventListener('message', handler);
+            window.parent.postMessage(message, '*');
         });
         
-        if (response && response.data) {
-            return response.data; // Base64 data URL from server
-        }
-        return url;
+        return response; // Return the base64 data URL
     } catch (error) {
         console.error('Error loading image:', error);
         return url;
