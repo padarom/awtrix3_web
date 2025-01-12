@@ -14,7 +14,7 @@ function proxyFetch(url, options = {}) {
     if (window === window.parent) {
         console.log('Direct request:', targetUrl);
         return fetch(targetUrl, options)
-            .then(res => res.ok ? (options.method === 'POST' ? {success: true} : res.json()) : Promise.reject('Request failed'))
+            .then(res => options.method === 'POST' ? { success: true } : res.json())
             .catch(err => {
                 console.error('Direct fetch error:', err);
                 throw err;
@@ -32,19 +32,21 @@ function proxyFetch(url, options = {}) {
             if (event.data.success) {
                 resolve(event.data.data);
             } else {
+                console.error('Proxy fetch error:', event.data.error);
                 reject(new Error(event.data.error));
             }
         };
-        
+
         window.addEventListener('message', handler);
-        
+
         const message = {
             id: messageId,
             url,
             method: options.method || 'GET',
             body: options.body
         };
-        
+
+        console.log('Sending postMessage:', message);
         window.parent.postMessage(message, '*');
     });
 }
@@ -161,9 +163,8 @@ function showLoading(show = true) {
 async function loadSettings() {
     showLoading(true);
     try {
-        // Use relative URL if in iframe
-        const url = isIframe ? '/api/system' : `${BASE_URL}/api/system`;
-        const settings = await proxyFetch(url);
+        const settings = await proxyFetch(`${BASE_URL}/api/system`);
+        console.log('Received settings:', settings);
         populateSettings(settings);
     } catch (error) {
         console.error('Error loading settings:', error);
@@ -246,9 +247,7 @@ async function updateSetting(key, value) {
 
         console.log('Sending setting update:', settingsData);
 
-        // Use relative URL if in iframe
-        const url = isIframe ? '/api/system' : `${BASE_URL}/api/system`;
-        const response = await proxyFetch(url, {
+        const response = await proxyFetch(`${BASE_URL}/api/system`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -256,7 +255,8 @@ async function updateSetting(key, value) {
             body: JSON.stringify(settingsData)
         });
 
-        if (response.success) {
+        // Die Antwort wird wie im Dashboard behandelt
+        if (response?.success || response === true) {
             showToast('Setting saved', 'success');
         } else {
             showToast('Error saving setting', 'error');
