@@ -14,10 +14,9 @@
         async function initializeServiceWorker(espIpAddress) {
             if ('serviceWorker' in navigator) {
                 try {
-                    const basePath = '/awtrix3_web_test/';  // Add trailing slash
-                    const registration = await navigator.serviceWorker.register(`${basePath}sw.js`, {
-                        scope: basePath
-                    });
+                    // Bei GitHub Pages müssen wir den korrekten Basispfad verwenden
+                    const swPath = '/sw.js'; // Pfad angepasst für GitHub Pages
+                    const registration = await navigator.serviceWorker.register(swPath);
                     
                     await navigator.serviceWorker.ready;
                     
@@ -28,7 +27,7 @@
                         });
                     }
                     
-                    console.log('Service Worker erfolgreich registriert mit Scope:', registration.scope);
+                    console.log('Service Worker erfolgreich registriert');
                 } catch (error) {
                     console.error('Service Worker Registrierung fehlgeschlagen:', error);
                 }

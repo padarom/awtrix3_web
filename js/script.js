@@ -1,33 +1,3 @@
-// Add service worker registration code at the beginning of the file
-async function registerServiceWorker() {
-    if ('serviceWorker' in navigator) {
-        try {
-            const basePath = '/awtrix3_web_test/';  // Add trailing slash
-            const registration = await navigator.serviceWorker.register(`${basePath}sw.js`, {
-                scope: basePath
-            });
-            
-            // Get the ESP IP from localStorage or use a default
-            const espIp = localStorage.getItem('espIpAddress') || '192.168.178.111';
-            
-            await navigator.serviceWorker.ready;
-            
-            if (registration.active) {
-                registration.active.postMessage({
-                    type: 'SET_ESP_IP',
-                    ip: espIp
-                });
-            }
-            console.log('ServiceWorker registration successful with scope:', registration.scope);
-        } catch (error) {
-            console.error('ServiceWorker registration failed:', error);
-        }
-    }
-}
-
-// Call the registration function
-registerServiceWorker();
-
 // Sidebar und Menü-Toggle
 const menuToggle = document.getElementById("menu-toggle");
 const sidebar = document.querySelector(".sidebar");
@@ -140,9 +110,6 @@ function showToast(message, type = 'info') {
         setTimeout(() => toast.remove(), 300);
     }, 3000);
 }
-
-// Update the BASE_URL to use the relative path
-const BASE_URL = '/api';  // This will be intercepted by the service worker
 
 // Standardseite beim Start laden
 (async () => {
