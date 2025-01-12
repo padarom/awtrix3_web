@@ -54,10 +54,11 @@ function proxyFetch(url, options = {}) {
     });
 }
 
-// Update loadIconsFromESP to use proxyFetch
+// Update loadIconsFromESP to use relative URLs in iframe
 async function loadIconsFromESP() {
     try {
-        const data = await proxyFetch(`${BASE_URL}/list?dir=${ICONS_PATH}`);
+        // Use relative URL if in iframe
+        const data = await proxyFetch(isIframe ? '/list?dir=/ICONS' : `${BASE_URL}/list?dir=${ICONS_PATH}`);
         const container = document.getElementById('esp-icon-grid');
         container.innerHTML = '';
 
@@ -66,10 +67,15 @@ async function loadIconsFromESP() {
                 const iconName = item.name;
                 const item_div = document.createElement('div');
                 item_div.className = 'icon-item';
+                
+                // Use relative path for image src in iframe
+                const imgSrc = isIframe ? 
+                    `${ICONS_PATH}/${iconName}` : 
+                    `${BASE_URL}${ICONS_PATH}/${iconName}`;
 
                 item_div.innerHTML = `
                     <div class="icon-preview">
-                        <img src="${BASE_URL}${ICONS_PATH}/${iconName}" alt="${iconName}" />
+                        <img src="${imgSrc}" alt="${iconName}" />
                     </div>
                     <div class="icon-info">
                         <span>${iconName}</span>
@@ -93,13 +99,13 @@ async function loadIconsFromESP() {
     }
 }
 
-// Update uploadIcon to use proxyFetch
+// Update uploadIcon to use relative URL in iframe
 async function uploadIcon(file) {
     const formData = new FormData();
     formData.append('file', file, ICONS_PATH + '/' + file.name);
 
     try {
-        await proxyFetch(`${BASE_URL}/edit`, {
+        await proxyFetch(isIframe ? '/edit' : `${BASE_URL}/edit`, {
             method: 'POST',
             body: formData
         });
@@ -259,26 +265,23 @@ async function downloadLametricImage() {
     }
 }
 
-function sendBlob(blob, iconId, extension) {
+// Update sendBlob to use proxyFetch and relative URLs
+async function sendBlob(blob, iconId, extension) {
     const formData = new FormData();
     formData.append("upfile", blob, "ICONS/" + iconId + extension);
 
-    fetch(`${BASE_URL}/edit`, {
-        method: "POST",
-        body: formData,
-    })
-        .then(response => {
-            if (response.ok) {
-                showToast('Icon erfolgreich gespeichert', 'success');
-                loadIconsFromESP();
-            } else {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-        })
-        .catch(error => {
-            console.log(error);
-            showToast(`Fehler beim Speichern des Icons: ${error.message}`, 'error');
+    try {
+        await proxyFetch(isIframe ? '/edit' : `${BASE_URL}/edit`, {
+            method: 'POST',
+            body: formData
         });
+        
+        showToast('Icon erfolgreich gespeichert', 'success');
+        loadIconsFromESP();
+    } catch (error) {
+        console.error(error);
+        showToast(`Fehler beim Speichern des Icons: ${error.message}`, 'error');
+    }
 }
 
 document.getElementById('preview-lametric')?.addEventListener('click', createLametricLink);
