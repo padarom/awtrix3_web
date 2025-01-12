@@ -1,8 +1,11 @@
+import { GIFEncoder, quantize, applyPalette } from 'https://unpkg.com/gifenc@1.0.3';
 
+const BASE_URL = 'http://192.168.178.111';
 
-// Canvas initialisieren
 const c = document.getElementById('c');
 let d, w = 1052, h = 260, e, f = false, g = performance.now();
+let recordingStartTime = 0;
+let recordingTimer = null;
 
 if (c) {
     d = c.getContext('2d');
@@ -10,9 +13,19 @@ if (c) {
     c.height = h;
 }
 
+function updateRecordingTime() {
+    const recordTimeElement = document.getElementById('recordTime');
+    if (!recordTimeElement) return;
+    
+    const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
+    const minutes = Math.floor(elapsed / 60);
+    const seconds = elapsed % 60;
+    recordTimeElement.textContent = ` (${minutes}:${seconds.toString().padStart(2, '0')})`;
+}
+
 // Fetch und Canvas-Rendering-Funktion
 function j() {
-    fetch("http://192.168.20.210/api/screen")
+    fetch(`${BASE_URL}/api/screen`)
         .then(response => response.json())
         .then(data => {
             if (!d) return; // Canvas nicht verfügbar
@@ -32,7 +45,13 @@ function j() {
                 const p = Math.round(o - g);
                 g = o;
                 const q = d.getImageData(0, 0, w, h).data;
-                // Implementiere quantize und applyPalette
+                const r = "rgb444";
+                const s = quantize(q, 256, { format: r });
+                const t = applyPalette(q, s, r);
+                e.writeFrame(t, w, h, {
+                    palette: s,
+                    delay: p
+                });
             }
             j(); // Rekursion für kontinuierliches Update
         })
@@ -49,29 +68,38 @@ document.getElementById("downloadpng")?.addEventListener("click", () => {
 
 document.getElementById("nextapp")?.addEventListener("click", () => {
     const a = new XMLHttpRequest();
-    a.open("POST", "http://192.168.20.210/api/nextapp", true);
+    a.open("POST", `${BASE_URL}/api/nextapp`, true);
     a.send();
 });
 
 document.getElementById("previousapp")?.addEventListener("click", () => {
     const a = new XMLHttpRequest();
-    a.open("POST", "http://192.168.20.210/api/previousapp", true);
+    a.open("POST", `${BASE_URL}/api/previousapp`, true);
     a.send();
 });
 
 document.getElementById("startgif")?.addEventListener("click", async function () {
-    const a = this;
+    const button = this;
+    const span = button.querySelector('span:not(.record-time)');
+    
     if (f) {
+        // Stop recording
         e.finish();
         const b = e.bytesView();
         l(b, 'awtrix.gif', 'image/gif');
         f = false;
-        a.textContent = "Start GIF recording";
+        span.textContent = "Record GIF";
+        clearInterval(recordingTimer);
+        document.getElementById('recordTime').textContent = '';
     } else {
+        // Start recording
         e = GIFEncoder();
         g = performance.now();
         f = true;
-        a.textContent = "Stop GIF recording";
+        span.textContent = "Stop Recording";
+        recordingStartTime = Date.now();
+        updateRecordingTime();
+        recordingTimer = setInterval(updateRecordingTime, 1000);
     }
 });
 
@@ -93,37 +121,118 @@ function formatUptime(seconds) {
     return `${days}d ${hours}h ${minutes}m ${secs}s`;
 }
 
+function formatBytes(bytes) {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
 
 async function fetchAndDisplayStats() {
     try {
-        // Hole die Daten von /api/stats
-        const response = await fetch('http://192.168.20.210/api/stats');
-        if (!response.ok) throw new Error('Fehler beim Laden der Statistiken');
+        const response = await fetch(`${BASE_URL}/api/stats`);
+        if (!response.ok) throw new Error('Failed to load statistics');
         
         const stats = await response.json();
-        const formattedUptime = formatUptime(stats.uptime);
-        // Zeige die Daten im entsprechenden Bereich an
-        const statsContainer = document.getElementById('stats');
-        statsContainer.innerHTML = `
-            <div class="stat-card">RAM<br><span> ${stats.ram} KB</span></div>
-            <div class="stat-card">Flash<br><span>${stats.flash} </span></div>
-            <div class="stat-card">Uptime<br><span>${formattedUptime}</span></div>
-            <div class="stat-card">Messages<br><span>${stats.messages}</span></div>
-        `;
-         
         
+        // Update RAM metrics
+        document.getElementById('ramValue').textContent = `${formatBytes(stats.usedRam)} / ${formatBytes(stats.totalRam)}`;
+        
+        // Update Flash metrics
+        document.getElementById('flashValue').textContent = `${formatBytes(stats.usedFlash)} / ${formatBytes(stats.totalFlash)}`;
+        
+        // Update Uptime
+        document.getElementById('uptimeValue').textContent = formatUptime(stats.uptime);
+        
+        // Update WiFi Signal
+        document.getElementById('wifiValue').textContent = `${stats.wifi_signal} dB`;
+        
+        // Update Current App
+        document.getElementById('currentApp').textContent = stats.app || 'None';
     } catch (error) {
-        console.error('Fehler beim Abrufen der Statistiken:', error);
+        console.error('Error fetching statistics:', error);
     }
 }
+
+// Initialize Chart.js for message history
+let messageChart;
+function initMessageChart() {
+    const ctx = document.getElementById('messageChart').getContext('2d');
+    messageChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Messages',
+                data: [],
+                borderColor: 'rgb(59, 130, 246)',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+function updateMessageChart(history) {
+    if (!messageChart) return;
+    
+    messageChart.data.labels = history.map((_, i) => `${i}m ago`);
+    messageChart.data.datasets[0].data = history;
+    messageChart.update();
+}
+
+// Add fullscreen functionality
+document.getElementById('fullscreen')?.addEventListener('click', () => {
+    const container = document.querySelector('.matrix-display');
+    if (container.requestFullscreen) {
+        container.requestFullscreen();
+    }
+});
+
+// Responsive Canvas-Anpassung
+function resizeCanvas() {
+    const container = document.getElementById('container-live');
+    if (!container || !c) return;
+    
+    const containerWidth = container.clientWidth;
+    const scale = containerWidth / 1052;
+    
+    c.style.width = `${containerWidth}px`;
+    c.style.height = `${260 * scale}px`;
+}
+
+// Event Listener für Resize
+window.addEventListener('resize', resizeCanvas);
+window.addEventListener('orientationchange', resizeCanvas);
+
+// Auto-refresh stats every 30 seconds
+setInterval(fetchAndDisplayStats, 30000);
+
 // Initialisiere das Dashboard
 async function initializeDashboard() {
-    
+
     await fetchAndDisplayStats();
 }
 
 // Rufe die Initialisierung des Dashboards auf, wenn die Seite geladen wird
-initializeDashboard();
+document.addEventListener('DOMContentLoaded', () => {
+    resizeCanvas();
+    initializeDashboard();
+});
 // Initialisierung
 j(); // Startet das Rendern der Canvas-Daten
 

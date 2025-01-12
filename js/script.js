@@ -1,3 +1,32 @@
+// Add service worker registration code at the beginning of the file
+async function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+        try {
+            const registration = await navigator.serviceWorker.register('/sw.js');
+            console.log('ServiceWorker registration successful');
+            
+            // Get the ESP IP from localStorage or use a default
+            const espIp = localStorage.getItem('espIpAddress') || '192.168.178.111';
+            
+            // Wait for the service worker to be ready
+            await navigator.serviceWorker.ready;
+            
+            // Send the ESP IP to the service worker
+            if (registration.active) {
+                registration.active.postMessage({
+                    type: 'SET_ESP_IP',
+                    ip: espIp
+                });
+            }
+        } catch (error) {
+            console.error('ServiceWorker registration failed:', error);
+        }
+    }
+}
+
+// Call the registration function
+registerServiceWorker();
+
 // Sidebar und Menü-Toggle
 const menuToggle = document.getElementById("menu-toggle");
 const sidebar = document.querySelector(".sidebar");
@@ -75,7 +104,6 @@ async function loadPage(pageId) {
         } else {
             console.error('Content-Container (#content) nicht gefunden.');
         }
-
                 // Dynamisches Skript laden
                 const script = document.createElement('script');
                 script.src = `js/${pageId}.js`; // Stelle sicher, dass das Skript für die Seite existiert
@@ -111,6 +139,9 @@ function showToast(message, type = 'info') {
         setTimeout(() => toast.remove(), 300);
     }, 3000);
 }
+
+// Update the BASE_URL to use the relative path
+const BASE_URL = '/api';  // This will be intercepted by the service worker
 
 // Standardseite beim Start laden
 (async () => {
