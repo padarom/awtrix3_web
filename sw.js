@@ -1,10 +1,10 @@
 const GITHUB_PAGES_PATH = '/awtrix3_web_test/';  // Add trailing slash
-let espIpAddress = '';
+let espIpAddress = '192.168.178.111';
 
 // Listen for messages from the main app
 self.addEventListener('message', (event) => {
     if (event.data.type === 'SET_ESP_IP') {
-        espIpAddress = event.data.ip;
+        //espIpAddress = event.data.ip;
     }
 });
 
