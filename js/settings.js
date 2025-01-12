@@ -212,29 +212,4 @@ async function updateSetting(key, value) {
     }
 }
 
-// Toast Notification System
-function showToast(message, type = 'info') {
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-
-    const icon = type === 'success' ? 'fa-check-circle' :
-        type === 'error' ? 'fa-exclamation-circle' :
-            'fa-info-circle';
-
-    toast.innerHTML = `
-        <i class="fas ${icon}"></i>
-        <span>${message}</span>
-    `;
-
-    const container = document.getElementById('toast-container');
-    container.appendChild(toast);
-
-    // Automatisches Entfernen nach 3 Sekunden
-    setTimeout(() => {
-        toast.style.animation = 'fadeOut 0.3s ease forwards';
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
-}
-
-// Initialize when DOM is loaded
 initializeSettings();
