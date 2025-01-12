@@ -119,70 +119,9 @@
         
     </main>
 
-    <script>
-        const debug = document.getElementById('debug');
-        function log(msg) {
-            debug.innerHTML += msg + '<br>';
-        }
+ 
 
-        window.addEventListener('message', async function(event) {
-            // Only accept messages from our web interface
-            if (event.origin !== "https://blueforcer.github.io") return;
-            
-            try {
-                // Strip the base URL and make local request
-                const localUrl = event.data.url.replace(/^http:\/\/[^/]+/, '');
-                
-                // Handle image requests
-                if (localUrl.startsWith('/ICONS/') && !event.data.method) {
-                    // For image requests, return the full URL to the local resource
-                    event.source.postMessage({
-                        id: event.data.id,
-                        success: true,
-                        data: localUrl  // Return the local path
-                    }, event.origin);
-                    return;
-                }
-                
-                const response = await fetch(localUrl, {
-                    method: event.data.method || 'GET',
-                    body: event.data.body ? event.data.body : undefined,
-                    headers: event.data.body ? {'Content-Type': 'application/json'} : undefined
-                });
-                
-                let data;
-                if (event.data.method === 'POST') {
-                    data = { success: true };
-                } else {
-                    try {
-                        data = await response.json();
-                    } catch (e) {
-                        data = null;
-                    }
-                }
-                
-                event.source.postMessage({
-                    id: event.data.id,
-                    success: true,
-                    data
-                }, event.origin);
-                
-            } catch (error) {
-                console.error('Error:', error);
-                event.source.postMessage({
-                    id: event.data.id,
-                    success: false,
-                    error: error.message
-                }, event.origin);
-            }
-        });
-
-        // Show debug panel on double tap
-        document.addEventListener('dblclick', () => {
-            debug.style.display = debug.style.display === 'none' ? 'block' : 'none';
-        });
-    </script>
-
+   
 </body>
 
 </html>

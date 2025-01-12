@@ -68,14 +68,14 @@ async function loadIconsFromESP() {
                 const item_div = document.createElement('div');
                 item_div.className = 'icon-item';
                 
-                // Verwende den vollen Pfad für die src
+                // Use relative path for image src in iframe
                 const imgSrc = isIframe ? 
-                    `/ICONS/${iconName}` : 
-                    `${BASE_URL}/ICONS/${iconName}`;
+                    `${ICONS_PATH}/${iconName}` : 
+                    `${BASE_URL}${ICONS_PATH}/${iconName}`;
 
                 item_div.innerHTML = `
                     <div class="icon-preview">
-                        <img src="${imgSrc}" data-filename="${iconName}" onerror="this.style.display='none'" />
+                        <img src="${imgSrc}" alt="${iconName}" />
                     </div>
                     <div class="icon-info">
                         <span>${iconName}</span>
@@ -111,22 +111,25 @@ async function formDataToObject(formData) {
         
         return {
             isFile: true,
-            // Remove ICONS prefix since it's already in the path
-            name: formData.get('file') ? file.name : formData.get('upfile').name,
+            name: formData.get('file') ? file.name : 'ICONS/' + formData.get('upfile').name,
             data: base64
         };
     }
     return Object.fromEntries(formData);
 }
 
-// Update uploadIcon to handle FormData conversion
+// Update uploadIcon to fix path
 async function uploadIcon(file) {
     const formData = new FormData();
-    // Remove ICONS from here since it's part of ICONS_PATH
+    // Remove ICONS_PATH from the file name since it's already in the path
     formData.append('file', file, file.name);
 
     try {
         const formDataObj = await formDataToObject(formData);
+        // Modify formDataObj to add ICONS_PATH
+        if (formDataObj.isFile) {
+            formDataObj.name = `${ICONS_PATH}/${formDataObj.name}`;
+        }
         await proxyFetch(isIframe ? '/edit' : `${BASE_URL}/edit`, {
             method: 'POST',
             body: formDataObj
@@ -287,14 +290,18 @@ async function downloadLametricImage() {
     }
 }
 
-// Update sendBlob to handle FormData conversion
+// Update sendBlob to fix path
 async function sendBlob(blob, iconId, extension) {
     const formData = new FormData();
-    // Remove ICONS from here since it's part of ICONS_PATH
+    // Remove redundant ICONS path
     formData.append("upfile", blob, iconId + extension);
 
     try {
         const formDataObj = await formDataToObject(formData);
+        // Modify formDataObj to add ICONS_PATH
+        if (formDataObj.isFile) {
+            formDataObj.name = `${ICONS_PATH}/${iconId}${extension}`;
+        }
         await proxyFetch(isIframe ? '/edit' : `${BASE_URL}/edit`, {
             method: 'POST',
             body: formDataObj
