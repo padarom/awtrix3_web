@@ -237,7 +237,7 @@ async function handleSettingChange(event) {
     await updateSetting(id, value);
 }
 
-// Update updateSetting to use proxyFetch correctly
+// Update updateSetting to handle proxied responses correctly
 async function updateSetting(key, value) {
     try {
         const settingsData = {
@@ -246,6 +246,7 @@ async function updateSetting(key, value) {
 
         // Use relative URL if in iframe
         const url = isIframe ? '/api/system' : `${BASE_URL}/api/system`;
+        
         const response = await proxyFetch(url, {
             method: 'POST',
             headers: {
@@ -259,6 +260,7 @@ async function updateSetting(key, value) {
         } else {
             showToast('Error saving setting', 'error');
         }
+
     } catch (error) {
         console.error('Error updating setting:', error);
         showToast('Error saving setting', 'error');
