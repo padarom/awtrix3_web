@@ -2049,5 +2049,152 @@ canvas {
 
 /* ...existing code... */
 
+/* Dashboard Layout */
+.dashboard-grid {
+    padding: 1.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.system-status-display {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.stats-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: #f8fafc;
+    border-radius: 12px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.stat-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #64748b;
+    font-size: 0.875rem;
+}
+
+.stat-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.matrix-display {
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.matrix-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.display-controls {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+
+.matrix-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.center-controls {
+    display: flex;
+    gap: 1rem;
+}
+
+.action-btn {
+    background: var(--primary);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.2s;
+}
+
+.action-btn:hover {
+    background: var(--primary-hover);
+}
+
+.nav-btn {
+    background: #334155;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.nav-btn:hover {
+    background: #475569;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .dashboard-grid {
+        padding: 1rem;
+    }
+
+    .system-status-display {
+        padding: 1rem;
+    }
+
+    .stats-bar {
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .matrix-display {
+        padding: 1rem;
+    }
+
+    .matrix-controls {
+        flex-direction: column;
+    }
+
+    .center-controls {
+        width: 100%;
+        order: -1;
+    }
+
+    .action-btn {
+        flex: 1;
+        justify-content: center;
+    }
+}
+
+/* ...existing code... */
+
 
 
