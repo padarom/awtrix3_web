@@ -10,12 +10,23 @@ self.addEventListener('message', (event) => {
 
 self.addEventListener('fetch', (event) => {
     const url = new URL(event.request.url);
-    console.log('Intercepted request:', url.pathname);
+    console.log('SW: Intercepted request:', {
+        url: url.href,
+        pathname: url.pathname,
+        method: event.request.method,
+        headers: Array.from(event.request.headers.entries())
+    });
     
     // Check if the request is for the ESP API, checking both paths
     if (url.pathname.includes('/api/') || url.pathname.includes('/awtrix3_web_test/api/')) {
+        console.log('SW: API request detected:', {
+            originalPath: url.pathname,
+            espIpAddress: espIpAddress
+        });
+        
         // Handle OPTIONS requests for CORS
         if (event.request.method === 'OPTIONS') {
+            console.log('SW: Handling OPTIONS request');
             event.respondWith(
                 new Response(null, {
                     status: 204,
@@ -33,7 +44,7 @@ self.addEventListener('fetch', (event) => {
             ? url.pathname.substring(url.pathname.indexOf('/api/'))
             : url.pathname;
             
-        console.log('API path extracted:', apiPath);
+        console.log('SW: API path extracted:', apiPath);
         
         event.respondWith(handleApiRequest(event.request, apiPath));
         return;
@@ -44,24 +55,42 @@ self.addEventListener('fetch', (event) => {
 });
 
 async function handleApiRequest(request, path) {
-    console.log('Handling API request:', path);
+    console.log('SW: Handling API request:', {
+        path: path,
+        method: request.method,
+        headers: Array.from(request.headers.entries())
+    });
+
     if (!espIpAddress) {
+        console.error('SW: ESP IP not configured');
         return new Response('ESP IP not configured', { status: 500 });
     }
 
     try {
-        // Create the ESP API URL with cleaned path
         const espUrl = `http://${espIpAddress}${path}`;
-        console.log('Proxying request to:', espUrl);
+        console.log('SW: Proxying request to:', espUrl);
 
-        // Use fetch with no-cors mode for mixed content
-        const response = await fetch(espUrl, {
+        const modifiedRequest = new Request(espUrl, {
             method: request.method,
             mode: 'no-cors',
             cache: 'no-cache',
             headers: {
                 'Accept': '*/*'
             }
+        });
+
+        console.log('SW: Modified request:', {
+            url: modifiedRequest.url,
+            method: modifiedRequest.method,
+            mode: modifiedRequest.mode,
+            headers: Array.from(modifiedRequest.headers.entries())
+        });
+
+        const response = await fetch(modifiedRequest);
+        console.log('SW: ESP response received:', {
+            status: response.status,
+            statusText: response.statusText,
+            headers: Array.from(response.headers.entries())
         });
 
         // For no-cors responses, we need to handle the data differently
@@ -97,7 +126,11 @@ async function handleApiRequest(request, path) {
         });
 
     } catch (error) {
-        console.error('Proxy error:', error);
+        console.error('SW: Proxy error:', {
+            message: error.message,
+            stack: error.stack,
+            path: path
+        });
         // Return a more detailed error response
         return new Response(JSON.stringify({ 
             error: 'Failed to connect to ESP',

@@ -23,13 +23,39 @@ function updateRecordingTime() {
 
 // Fetch und Canvas-Rendering-Funktion
 function j() {
-    fetch('/api/screen')  // Verwende den relativen Pfad
+    console.log('Dashboard: Starting screen fetch');
+    const url = '/api/screen';
+    console.log('Dashboard: Fetching from:', url);
+    
+    fetch(url)
         .then(async response => {
-            console.log('Screen API response:', response);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            console.log('Dashboard: Screen API response:', {
+                status: response.status,
+                statusText: response.statusText,
+                headers: Array.from(response.headers.entries()),
+                url: response.url
+            });
+            
+            if (!response.ok) {
+                console.error('Dashboard: Response not OK', {
+                    status: response.status,
+                    statusText: response.statusText
+                });
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const contentType = response.headers.get('content-type');
+            console.log('Dashboard: Content-Type:', contentType);
+            
             return response.json();
         })
         .then(data => {
+            console.log('Dashboard: Received data:', {
+                dataType: typeof data,
+                isArray: Array.isArray(data),
+                length: Array.isArray(data) ? data.length : 'not an array'
+            });
+            
             if (!d) return; // Canvas nicht verfügbar
             d.clearRect(0, 0, c.width, c.height);
             for (let b = 0; b < 8; b++) {
@@ -58,7 +84,10 @@ function j() {
             j(); // Rekursion für kontinuierliches Update
         })
         .catch(error => {
-            console.error("Error fetching screen data:", error);
+            console.error("Dashboard: Error fetching screen data:", {
+                message: error.message,
+                stack: error.stack
+            });
             // Add retry logic
             setTimeout(j, 5000); // Retry after 5 seconds
         });
@@ -131,9 +160,17 @@ function formatBytes(bytes) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
+// Update stats fetch with debugging
 async function fetchAndDisplayStats() {
     try {
+        console.log('Dashboard: Fetching stats');
         const response = await fetch('/api/stats');
+        console.log('Dashboard: Stats response:', {
+            status: response.status,
+            statusText: response.statusText,
+            headers: Array.from(response.headers.entries())
+        });
+        
         if (!response.ok) throw new Error('Failed to load statistics');
         
         const stats = await response.json();
@@ -153,7 +190,10 @@ async function fetchAndDisplayStats() {
         // Update Current App
         document.getElementById('currentApp').textContent = stats.app || 'None';
     } catch (error) {
-        console.error('Error fetching statistics:', error);
+        console.error('Dashboard: Stats fetch error:', {
+            message: error.message,
+            stack: error.stack
+        });
         // Add retry logic
         setTimeout(fetchAndDisplayStats, 5000);
     }
