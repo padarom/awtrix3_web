@@ -12,26 +12,8 @@
     <script src="js/script.js" defer></script>
     <!--script src="https://cdn.jsdelivr.net/gh/Blueforcer/awtrix3_web_test/js/script.js" defer></script-->
 
-    <script type="module">
-        import {
-            GIFEncoder,
-            quantize,
-            applyPalette
-        } from 'https://unpkg.com/gifenc@1.0.3';
-        
-    </script>
-
 </head>
 <body>
-    <script>
-        // Check if we need to configure the ESP IP
-        if (!localStorage.getItem('espIp')) {
-            const ip = prompt('Enter your ESP32 IP address:', '192.168.178.111');
-            if (ip) {
-                localStorage.setItem('espIp', ip);
-            }
-        }
-    </script>
     <!-- Overlay für das Menü -->
     <div class="overlay" id="overlay"></div>
 
