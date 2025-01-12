@@ -13,7 +13,7 @@ export function getBaseUrl() {
     } else {
         // Direct access - use stored IP or default
         alert('Direct access');
-        return `http://${localStorage.getItem('espIp') || '192.168.178.111'}`;
+        return `http://192.168.178.111`;
     }
 }
 
