@@ -1,16 +1,65 @@
+const BASE_URL = (() => {
+    const espIp = localStorage.getItem('espIp') || '192.168.178.111';
+    return `http://${espIp}`;
+})();
+
+const ICONS_PATH = '/ICONS';
 let selectedIcon = null;
 const renameBtn = document.querySelector('.rename-btn');
 const deleteBtn = document.querySelector('.delete-btn');
-const BASE_URL = 'http://192.168.178.111';
-const ICONS_PATH = '/ICONS';
 
+// Check if we're in an iframe
+const isIframe = window !== window.parent;
+
+// Add proxyFetch function
+function proxyFetch(url, options = {}) {
+    const targetUrl = window !== window.parent ? url.replace(BASE_URL, '') : url;
+    
+    if (window === window.parent) {
+        console.log('Direct request:', targetUrl);
+        return fetch(targetUrl, options)
+            .then(res => options.method === 'POST' ? { success: true } : res.json())
+            .catch(err => {
+                console.error('Direct fetch error:', err);
+                throw err;
+            });
+    }
+
+    return new Promise((resolve, reject) => {
+        const messageId = Date.now().toString();
+        
+        const handler = (event) => {
+            if (event.data.id !== messageId) return;
+            
+            window.removeEventListener('message', handler);
+            
+            if (event.data.success) {
+                resolve(event.data.data);
+            } else {
+                reject(new Error(event.data.error));
+            }
+        };
+
+        window.addEventListener('message', handler);
+
+        const message = {
+            id: messageId,
+            url,
+            method: options.method || 'GET',
+            body: options.body
+        };
+
+        console.log('Sending postMessage:', message);
+        window.parent.postMessage(message, '*');
+    });
+}
+
+// Update loadIconsFromESP to use proxyFetch
 async function loadIconsFromESP() {
     try {
-        const response = await fetch(`${BASE_URL}/list?dir=${ICONS_PATH}`);
-        const data = await response.json();
+        const data = await proxyFetch(`${BASE_URL}/list?dir=${ICONS_PATH}`);
         const container = document.getElementById('esp-icon-grid');
         container.innerHTML = '';
-
 
         data.forEach(item => {
             if (item.type === "file") {
@@ -40,14 +89,33 @@ async function loadIconsFromESP() {
         });
     } catch (error) {
         console.error('Error loading icons:', error);
+        showToast('Error loading icons', 'error');
     }
 }
 
+// Update uploadIcon to use proxyFetch
+async function uploadIcon(file) {
+    const formData = new FormData();
+    formData.append('file', file, ICONS_PATH + '/' + file.name);
 
+    try {
+        await proxyFetch(`${BASE_URL}/edit`, {
+            method: 'POST',
+            body: formData
+        });
+
+        showToast('Icon uploaded successfully', 'success');
+        loadIconsFromESP();
+    } catch (error) {
+        showToast('Error uploading icon', 'error');
+    }
+}
+
+// Update rename functionality
 renameBtn.addEventListener('click', async () => {
     if (!selectedIcon) return;
 
-    const newName = prompt('Neuer Name:', selectedIcon.split('.').slice(0, -1).join('.'));
+    const newName = prompt('New name:', selectedIcon.split('.').slice(0, -1).join('.'));
     if (!newName) return;
 
     const newFileName = `${newName}.${selectedIcon.split('.').pop()}`;
@@ -55,8 +123,7 @@ renameBtn.addEventListener('click', async () => {
     const newPath = `${ICONS_PATH}/${newFileName}`;
 
     try {
-
-        const response = await fetch(`${BASE_URL}/edit`, {
+        await proxyFetch(`${BASE_URL}/edit`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -64,26 +131,21 @@ renameBtn.addEventListener('click', async () => {
             body: `path=${encodeURIComponent(newPath)}&src=${encodeURIComponent(oldPath)}`
         });
 
-        if (response.ok) {
-            showToast('Icon erfolgreich umbenannt', 'success');
-            loadIconsFromESP();
-        } else {
-            const text = await response.text();
-            showToast(`Fehler beim Umbenennen: ${text}`, 'error');
-        }
+        showToast('Icon renamed successfully', 'success');
+        loadIconsFromESP();
     } catch (error) {
-        showToast('Fehler beim Umbenennen. Bitte überprüfe die Verbindung zum Server.', 'error');
+        showToast('Error renaming icon', 'error');
     }
 });
 
-// Löschen-Funktion
+// Update delete functionality
 deleteBtn.addEventListener('click', async () => {
     if (!selectedIcon) return;
 
-    if (!confirm(`Möchten Sie das Icon "${selectedIcon}" wirklich löschen?`)) return;
+    if (!confirm(`Do you want to delete "${selectedIcon}"?`)) return;
 
     try {
-        const response = await fetch(`${BASE_URL}/edit`, {
+        await proxyFetch(`${BASE_URL}/edit`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -91,42 +153,15 @@ deleteBtn.addEventListener('click', async () => {
             body: `path=${encodeURIComponent(ICONS_PATH + '/' + selectedIcon)}`
         });
 
-        if (response.ok) {
-            loadIconsFromESP();
-            selectedIcon = null;
-            renameBtn.disabled = true;
-            deleteBtn.disabled = true;
-        } else {
-            const text = await response.text();
-            showToast(`Fehler beim Löschen: ${text}`, 'error');
-        }
+        showToast('Icon deleted successfully', 'success');
+        loadIconsFromESP();
+        selectedIcon = null;
+        renameBtn.disabled = true;
+        deleteBtn.disabled = true;
     } catch (error) {
-        showToast('Fehler beim Löschen. Bitte überprüfe die Verbindung zum Server.', 'error');
+        showToast('Error deleting icon', 'error');
     }
 });
-
-
-async function uploadIcon(file) {
-    const formData = new FormData();
-    formData.append('file', file, ICONS_PATH + '/' + file.name);
-
-    try {
-        const response = await fetch(`${BASE_URL}/edit`, {
-            method: 'POST',
-            body: formData
-        });
-
-        if (response.ok) {
-            loadIconsFromESP();
-        } else {
-            const text = await response.text();
-            showToast(`Fehler beim Upload: ${text}`, 'error');
-        }
-    } catch (error) {
-        showToast('Fehler beim Upload. Bitte überprüfe die Verbindung zum Server.', 'error');
-    }
-}
-
 
 document.querySelectorAll('.tab-btn').forEach(button => {
     button.addEventListener('click', () => {
@@ -160,10 +195,8 @@ document.getElementById('icon-upload').addEventListener('change', async (e) => {
         return;
     }
 
-
     uploadIcon(file);
 });
-
 
 function createLametricLink() {
     const iconId = document.getElementById("lametric-iconID").value;
