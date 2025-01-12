@@ -277,7 +277,7 @@ setInterval(fetchAndDisplayStats, 30000);
 // Initialisiere das Dashboard
 async function initializeDashboard() {
 
-    await fetchAndDisplayStats();
+    //await fetchAndDisplayStats();
 }
 
 // Rufe die Initialisierung des Dashboards auf, wenn die Seite geladen wird
