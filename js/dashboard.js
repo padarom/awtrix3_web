@@ -30,6 +30,7 @@ const isIframe = window !== window.parent;
 function proxyFetch(url, options = {}) {
     // If not in iframe, make direct request
     if (!isIframe) {
+        console.log('Direct request:', url);
         return fetch(url, options).then(res => res.json()).catch(err => {
             console.error('Direct fetch error:', err);
             throw err;
@@ -39,8 +40,13 @@ function proxyFetch(url, options = {}) {
     return new Promise((resolve, reject) => {
         const messageId = Date.now().toString();
         
+        console.log('Setting up message handler for ID:', messageId);
+        
         const handler = (event) => {
+            console.log('Received response:', event.data);
             if (event.data.id !== messageId) return;
+            
+            console.log('Matching message ID found:', messageId);
             window.removeEventListener('message', handler);
             
             if (event.data.success) {
@@ -53,19 +59,15 @@ function proxyFetch(url, options = {}) {
         
         window.addEventListener('message', handler);
         
-        console.log('Sending postMessage:', {
+        const message = {
             id: messageId,
             url,
             method: options.method || 'GET',
             body: options.body
-        });
+        };
         
-        window.parent.postMessage({
-            id: messageId,
-            url,
-            method: options.method || 'GET',
-            body: options.body
-        }, '*');
+        console.log('Sending postMessage:', message);
+        window.parent.postMessage(message, '*');
     });
 }
 
