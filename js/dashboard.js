@@ -181,27 +181,66 @@ function formatBytes(bytes) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-// Modify other fetch calls similarly
-async function fetchAndDisplayStats() {
+let statsInterval;
+const STATS_REFRESH_INTERVAL = 5000; // 5 seconds
+
+// Enhanced stats fetching with error handling and retry
+async function fetchStats() {
     try {
         const stats = await proxyFetch(`${BASE_URL}/api/stats`);
-        // Update RAM metrics
-        document.getElementById('ramValue').textContent = `${formatBytes(stats.usedRam)} / ${formatBytes(stats.totalRam)}`;
-
-        // Update Flash metrics
-        document.getElementById('flashValue').textContent = `${formatBytes(stats.usedFlash)} / ${formatBytes(stats.totalFlash)}`;
-
-        // Update Uptime
-        document.getElementById('uptimeValue').textContent = formatUptime(stats.uptime);
-
-        // Update WiFi Signal
-        document.getElementById('wifiValue').textContent = `${stats.wifi_signal} dB`;
-
-        // Update Current App
-        document.getElementById('currentApp').textContent = stats.app || 'None';
+        updateStatsDisplay(stats);
+        return true;
     } catch (error) {
-        console.error('Error fetching statistics:', error);
+        console.error('Error fetching stats:', error);
+        updateStatsError();
+        return false;
     }
+}
+
+function updateStatsDisplay(stats) {
+    const elements = {
+        ram: document.getElementById('ramValue'),
+        flash: document.getElementById('flashValue'),
+        uptime: document.getElementById('uptimeValue'),
+        wifi: document.getElementById('wifiValue'),
+        app: document.getElementById('currentApp')
+    };
+
+    // Update with animation
+    animateValue(elements.ram, `${formatBytes(stats.usedRam)} / ${formatBytes(stats.totalRam)}`);
+    animateValue(elements.flash, `${formatBytes(stats.usedFlash)} / ${formatBytes(stats.totalFlash)}`);
+    animateValue(elements.uptime, formatUptime(stats.uptime));
+    animateValue(elements.wifi, `${stats.wifi_signal} dB`);
+    animateValue(elements.app, stats.app || 'None');
+
+    // Remove error states if present
+    Object.values(elements).forEach(el => {
+        if (el) el.closest('.stat-item')?.classList.remove('error');
+    });
+}
+
+function updateStatsError() {
+    const elements = ['ramValue', 'flashValue', 'uptimeValue', 'wifiValue', 'currentApp'];
+    elements.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.textContent = '--';
+            el.closest('.stat-item')?.classList.add('error');
+        }
+    });
+}
+
+function animateValue(element, newValue) {
+    if (!element) return;
+    
+    element.style.transform = 'translateY(-5px)';
+    element.style.opacity = '0';
+    
+    setTimeout(() => {
+        element.textContent = newValue;
+        element.style.transform = 'translateY(0)';
+        element.style.opacity = '1';
+    }, 200);
 }
 
 // Initialize Chart.js for message history
@@ -268,20 +307,30 @@ function resizeCanvas() {
 window.addEventListener('resize', resizeCanvas);
 window.addEventListener('orientationchange', resizeCanvas);
 
-// Auto-refresh stats every 30 seconds
-setInterval(fetchAndDisplayStats, 30000);
+// Event listener cleanup
+window.addEventListener('beforeunload', () => {
+    if (statsInterval) clearInterval(statsInterval);
+});
 
-// Initialisiere das Dashboard
+// Initialize dashboard with stats
 async function initializeDashboard() {
-
-    await fetchAndDisplayStats();
+    // Initial fetch
+    await fetchStats();
+    
+    // Clear any existing interval
+    if (statsInterval) clearInterval(statsInterval);
+    
+    // Set up new interval
+    statsInterval = setInterval(fetchStats, STATS_REFRESH_INTERVAL);
+    
+    // Start canvas rendering
+    resizeCanvas();
+    j();
 }
 
-// Rufe die Initialisierung des Dashboards auf, wenn die Seite geladen wird
-document.addEventListener('DOMContentLoaded', () => {
-    resizeCanvas();
-    initializeDashboard();
-});
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', initializeDashboard);
+
 // Initialisierung
 j(); // Startet das Rendern der Canvas-Daten
 
