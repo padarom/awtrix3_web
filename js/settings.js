@@ -1,8 +1,6 @@
-// Replace static BASE_URL with dynamic version
-const BASE_URL = (() => {
-    const espIp = localStorage.getItem('espIp') || '192.168.178.111';
-    return `http://${espIp}`;
-})();
+import { getBaseUrl, isIframe } from './utils.js';
+
+const BASE_URL = getBaseUrl();
 
 // Check if we're in an iframe
 const isIframe = window !== window.parent;

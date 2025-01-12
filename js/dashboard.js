@@ -1,4 +1,7 @@
 import { GIFEncoder, quantize, applyPalette } from 'https://unpkg.com/gifenc@1.0.3';
+import { getBaseUrl, isIframe } from './utils.js';
+
+const BASE_URL = getBaseUrl();
 
 const c = document.getElementById('c');
 let d, w = 1052, h = 260, e, f = false, g = performance.now();
@@ -24,48 +27,57 @@ function updateRecordingTime() {
 // Check if we're in an iframe
 const isIframe = window !== window.parent;
 
-// Instead of determining BASE_URL, we'll work directly with relative paths in iframe mode
+// Modified proxyFetch function
 function proxyFetch(url, options = {}) {
-    // If we're in an iframe, use relative paths
-    if (window !== window.parent) {
-        const relativePath = url.replace(/^http:\/\/[^/]+/, '');
-        
-        return new Promise((resolve, reject) => {
-            const messageId = Date.now().toString();
-            
-            const handler = (event) => {
-                if (event.data.id !== messageId) return;
-                window.removeEventListener('message', handler);
-                
-                if (event.data.success) {
-                    resolve(event.data.data);
-                } else {
-                    reject(new Error(event.data.error));
-                }
-            };
+    // Remove the full URL if we're in an iframe
+    const targetUrl = window !== window.parent ? url.replace(BASE_URL, '') : url;
 
-            window.addEventListener('message', handler);
-            window.parent.postMessage({
-                id: messageId,
-                url: relativePath,
-                method: options.method || 'GET',
-                body: options.body
-            }, '*');
-        });
+    // If not in iframe, make direct request
+    if (window === window.parent) {
+        console.log('Direct request:', targetUrl);
+        return fetch(targetUrl, options)
+            .then(res => options.method === 'POST' ? { success: true } : res.json())
+            .catch(err => {
+                console.error('Direct fetch error:', err);
+                throw err;
+            });
     }
 
-    // Direct request when not in iframe
-    return fetch(url, options)
-        .then(res => options.method === 'POST' ? { success: true } : res.json())
-        .catch(err => {
-            console.error('Direct fetch error:', err);
-            throw err;
-        });
+    return new Promise((resolve, reject) => {
+        const messageId = Date.now().toString();
+
+
+        const handler = (event) => {
+
+            if (event.data.id !== messageId) return;
+
+
+            window.removeEventListener('message', handler);
+
+            if (event.data.success) {
+                resolve(event.data.data);
+            } else {
+                console.error('Proxy fetch error:', event.data.error);
+                reject(new Error(event.data.error));
+            }
+        };
+
+        window.addEventListener('message', handler);
+
+        const message = {
+            id: messageId,
+            url,
+            method: options.method || 'GET',
+            body: options.body
+        };
+
+        window.parent.postMessage(message, '*');
+    });
 }
 
 // Fetch und Canvas-Rendering-Funktion
 function j() {
-    proxyFetch('/api/screen')
+    proxyFetch(`${BASE_URL}/api/screen`)
         .then(data => {
             if (!d) return; // Canvas nicht verfügbar
             d.clearRect(0, 0, c.width, c.height);
@@ -106,12 +118,12 @@ document.getElementById("downloadpng")?.addEventListener("click", () => {
 });
 
 document.getElementById("nextapp")?.addEventListener("click", () => {
-    proxyFetch('/api/nextapp', { method: 'POST' })
+    proxyFetch(`${BASE_URL}/api/nextapp`, { method: 'POST' })
         .catch(error => console.error("Error changing app:", error));
 });
 
 document.getElementById("previousapp")?.addEventListener("click", () => {
-    proxyFetch('/api/previousapp', { method: 'POST' })
+    proxyFetch(`${BASE_URL}/api/previousapp`, { method: 'POST' })
         .catch(error => console.error("Error changing app:", error));
 });
 
@@ -172,7 +184,7 @@ const STATS_REFRESH_INTERVAL = 5000; // 5 seconds
 // Enhanced stats fetching with error handling and retry
 async function fetchStats() {
     try {
-        const stats = await proxyFetch('/api/stats');
+        const stats = await proxyFetch(`${BASE_URL}/api/stats`);
         updateStatsDisplay(stats);
         return true;
     } catch (error) {

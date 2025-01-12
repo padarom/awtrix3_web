@@ -1,8 +1,6 @@
-const BASE_URL = (() => {
-    const espIp = localStorage.getItem('espIp') || '192.168.178.111';
-    return `http://${espIp}`;
-})();
+import { getBaseUrl, isIframe } from './utils.js';
 
+const BASE_URL = getBaseUrl();
 const ICONS_PATH = '/ICONS';
 let selectedIcon = null;
 const renameBtn = document.querySelector('.rename-btn');
