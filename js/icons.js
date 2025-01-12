@@ -68,14 +68,14 @@ async function loadIconsFromESP() {
                 const item_div = document.createElement('div');
                 item_div.className = 'icon-item';
                 
-                // Use relative path for image src in iframe
+                // Verwende den vollen Pfad für die src
                 const imgSrc = isIframe ? 
-                    `${ICONS_PATH}/${iconName}` : 
-                    `${BASE_URL}${ICONS_PATH}/${iconName}`;
+                    `/ICONS/${iconName}` : 
+                    `${BASE_URL}/ICONS/${iconName}`;
 
                 item_div.innerHTML = `
                     <div class="icon-preview">
-                        <img src="${imgSrc}" alt="${iconName}" />
+                        <img src="${imgSrc}" data-filename="${iconName}" onerror="this.style.display='none'" />
                     </div>
                     <div class="icon-info">
                         <span>${iconName}</span>
