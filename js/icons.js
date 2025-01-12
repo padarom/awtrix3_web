@@ -154,24 +154,29 @@ async function formDataToObject(formData) {
 // Update uploadIcon to fix path
 async function uploadIcon(file) {
     const formData = new FormData();
-    // Remove ICONS_PATH from the file name since it's already in the path
     formData.append('file', file, file.name);
 
     try {
         const formDataObj = await formDataToObject(formData);
-        // Modify formDataObj to add ICONS_PATH
+        // Use correct path format
         if (formDataObj.isFile) {
-            formDataObj.name = `${ICONS_PATH}/${formDataObj.name}`;
+            formDataObj.name = `${ICONS_PATH}/${file.name}`;
         }
-        await proxyFetch(isIframe ? '/edit' : `${BASE_URL}/edit`, {
+        
+        const response = await proxyFetch(isIframe ? '/edit' : `${BASE_URL}/edit`, {
             method: 'POST',
             body: formDataObj
         });
 
-        showToast('Icon uploaded successfully', 'success');
-        loadIconsFromESP();
+        if (response.success) {
+            showToast('Icon uploaded successfully', 'success');
+            loadIconsFromESP();
+        } else {
+            throw new Error('Upload failed');
+        }
     } catch (error) {
         showToast('Error uploading icon', 'error');
+        console.error('Upload error:', error);
     }
 }
 
@@ -187,7 +192,7 @@ renameBtn.addEventListener('click', async () => {
     const newPath = `${ICONS_PATH}/${newFileName}`;
 
     try {
-        await proxyFetch(`${BASE_URL}/edit`, {
+        await proxyFetch(isIframe ? '/edit' : `${BASE_URL}/edit`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -209,7 +214,7 @@ deleteBtn.addEventListener('click', async () => {
     if (!confirm(`Do you want to delete "${selectedIcon}"?`)) return;
 
     try {
-        await proxyFetch(`${BASE_URL}/edit`, {
+        await proxyFetch(isIframe ? '/edit' : `${BASE_URL}/edit`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -326,22 +331,26 @@ async function downloadLametricImage() {
 // Update sendBlob to fix path
 async function sendBlob(blob, iconId, extension) {
     const formData = new FormData();
-    // Remove redundant ICONS path
-    formData.append("upfile", blob, iconId + extension);
+    const fileName = iconId + extension;
+    formData.append("file", blob, fileName);
 
     try {
         const formDataObj = await formDataToObject(formData);
-        // Modify formDataObj to add ICONS_PATH
         if (formDataObj.isFile) {
-            formDataObj.name = `${ICONS_PATH}/${iconId}${extension}`;
+            formDataObj.name = `${ICONS_PATH}/${fileName}`;
         }
-        await proxyFetch(isIframe ? '/edit' : `${BASE_URL}/edit`, {
+        
+        const response = await proxyFetch(isIframe ? '/edit' : `${BASE_URL}/edit`, {
             method: 'POST',
             body: formDataObj
         });
-        
-        showToast('Icon erfolgreich gespeichert', 'success');
-        loadIconsFromESP();
+
+        if (response.success) {
+            showToast('Icon erfolgreich gespeichert', 'success');
+            loadIconsFromESP();
+        } else {
+            throw new Error('Upload failed');
+        }
     } catch (error) {
         console.error(error);
         showToast(`Fehler beim Speichern des Icons: ${error.message}`, 'error');
