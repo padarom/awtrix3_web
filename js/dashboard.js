@@ -1,5 +1,5 @@
 import { GIFEncoder, quantize, applyPalette } from 'https://unpkg.com/gifenc@1.0.3';
-import { getBaseUrl, isIframe } from './utils.js';
+import { getBaseUrl, proxyFetch } from './utils.js';
 
 const BASE_URL = getBaseUrl();
 
@@ -26,54 +26,6 @@ function updateRecordingTime() {
 
 // Check if we're in an iframe
 const isIframe = window !== window.parent;
-
-// Modified proxyFetch function
-function proxyFetch(url, options = {}) {
-    // Remove the full URL if we're in an iframe
-    const targetUrl = window !== window.parent ? url.replace(BASE_URL, '') : url;
-
-    // If not in iframe, make direct request
-    if (window === window.parent) {
-        console.log('Direct request:', targetUrl);
-        return fetch(targetUrl, options)
-            .then(res => options.method === 'POST' ? { success: true } : res.json())
-            .catch(err => {
-                console.error('Direct fetch error:', err);
-                throw err;
-            });
-    }
-
-    return new Promise((resolve, reject) => {
-        const messageId = Date.now().toString();
-
-
-        const handler = (event) => {
-
-            if (event.data.id !== messageId) return;
-
-
-            window.removeEventListener('message', handler);
-
-            if (event.data.success) {
-                resolve(event.data.data);
-            } else {
-                console.error('Proxy fetch error:', event.data.error);
-                reject(new Error(event.data.error));
-            }
-        };
-
-        window.addEventListener('message', handler);
-
-        const message = {
-            id: messageId,
-            url,
-            method: options.method || 'GET',
-            body: options.body
-        };
-
-        window.parent.postMessage(message, '*');
-    });
-}
 
 // Fetch und Canvas-Rendering-Funktion
 function j() {
