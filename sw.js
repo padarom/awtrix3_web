@@ -10,14 +10,12 @@ self.addEventListener('message', (event) => {
 
 self.addEventListener('fetch', (event) => {
     const url = new URL(event.request.url);
+    console.log('Intercepted request:', url.pathname);
     
-    // Remove the GitHub Pages path prefix for API requests
-    const path = url.pathname.replace(GITHUB_PAGES_PATH, '/');
-    
-    // Check if the request is for the ESP API
-    if (path.startsWith('/api/')) {
+    // Check if the request is for the ESP API, regardless of the base path
+    if (url.pathname.includes('/api/')) {
         event.respondWith(
-            handleApiRequest(event.request, path)
+            handleApiRequest(event.request, url.pathname.substring(url.pathname.indexOf('/api/')))
         );
         return;
     }
@@ -27,6 +25,7 @@ self.addEventListener('fetch', (event) => {
 });
 
 async function handleApiRequest(request, path) {
+    console.log('Handling API request:', path);
     if (!espIpAddress) {
         return new Response('ESP IP not configured', { status: 500 });
     }

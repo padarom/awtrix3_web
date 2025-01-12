@@ -23,9 +23,12 @@ function updateRecordingTime() {
 
 // Fetch und Canvas-Rendering-Funktion
 function j() {
-    fetch('/api/screen')
-        .then(response => {console.log(response); })
-        .then(response => response.json())
+    fetch('/awtrix3_web_test/api/screen')
+        .then(async response => {
+            console.log('Screen API response:', response);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            return response.json();
+        })
         .then(data => {
             if (!d) return; // Canvas nicht verfügbar
             d.clearRect(0, 0, c.width, c.height);
@@ -70,11 +73,11 @@ document.getElementById("downloadpng")?.addEventListener("click", () => {
 });
 
 document.getElementById("nextapp")?.addEventListener("click", () => {
-    fetch('/api/nextapp', { method: 'POST' });
+    fetch('/awtrix3_web_test/api/nextapp', { method: 'POST' });
 });
 
 document.getElementById("previousapp")?.addEventListener("click", () => {
-    fetch('/api/previousapp', { method: 'POST' });
+    fetch('/awtrix3_web_test/api/previousapp', { method: 'POST' });
 });
 
 document.getElementById("startgif")?.addEventListener("click", async function () {
@@ -130,7 +133,7 @@ function formatBytes(bytes) {
 
 async function fetchAndDisplayStats() {
     try {
-        const response = await fetch('/api/stats');
+        const response = await fetch('/awtrix3_web_test/api/stats');
         if (!response.ok) throw new Error('Failed to load statistics');
         
         const stats = await response.json();
