@@ -1,7 +1,5 @@
 import { GIFEncoder, quantize, applyPalette } from 'https://unpkg.com/gifenc@1.0.3';
 
-const BASE_URL = 'http://192.168.178.111';
-
 const c = document.getElementById('c');
 let d, w = 1052, h = 260, e, f = false, g = performance.now();
 let recordingStartTime = 0;
@@ -25,7 +23,7 @@ function updateRecordingTime() {
 
 // Fetch und Canvas-Rendering-Funktion
 function j() {
-    fetch(`${BASE_URL}/api/screen`)
+    fetch('/api/screen')
         .then(response => response.json())
         .then(data => {
             if (!d) return; // Canvas nicht verfügbar
@@ -55,7 +53,11 @@ function j() {
             }
             j(); // Rekursion für kontinuierliches Update
         })
-        .catch(error => console.error("Error fetching screen data:", error));
+        .catch(error => {
+            console.error("Error fetching screen data:", error);
+            // Add retry logic
+            setTimeout(j, 5000); // Retry after 5 seconds
+        });
 }
 
 // Event-Listener für Buttons
@@ -67,15 +69,11 @@ document.getElementById("downloadpng")?.addEventListener("click", () => {
 });
 
 document.getElementById("nextapp")?.addEventListener("click", () => {
-    const a = new XMLHttpRequest();
-    a.open("POST", `${BASE_URL}/api/nextapp`, true);
-    a.send();
+    fetch('/api/nextapp', { method: 'POST' });
 });
 
 document.getElementById("previousapp")?.addEventListener("click", () => {
-    const a = new XMLHttpRequest();
-    a.open("POST", `${BASE_URL}/api/previousapp`, true);
-    a.send();
+    fetch('/api/previousapp', { method: 'POST' });
 });
 
 document.getElementById("startgif")?.addEventListener("click", async function () {
@@ -131,7 +129,7 @@ function formatBytes(bytes) {
 
 async function fetchAndDisplayStats() {
     try {
-        const response = await fetch(`${BASE_URL}/api/stats`);
+        const response = await fetch('/api/stats');
         if (!response.ok) throw new Error('Failed to load statistics');
         
         const stats = await response.json();
@@ -152,6 +150,8 @@ async function fetchAndDisplayStats() {
         document.getElementById('currentApp').textContent = stats.app || 'None';
     } catch (error) {
         console.error('Error fetching statistics:', error);
+        // Add retry logic
+        setTimeout(fetchAndDisplayStats, 5000);
     }
 }
 

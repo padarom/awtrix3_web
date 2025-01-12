@@ -14,9 +14,12 @@
         async function initializeServiceWorker(espIpAddress) {
             if ('serviceWorker' in navigator) {
                 try {
-                    // Bei GitHub Pages müssen wir den korrekten Basispfad verwenden
-                    const swPath = '/sw.js'; // Pfad angepasst für GitHub Pages
-                    const registration = await navigator.serviceWorker.register(swPath);
+                    // Get the correct base path for GitHub Pages
+                    const basePath = '/awtrix3_web_test';
+                    const swPath = `${basePath}/sw.js`;
+                    const registration = await navigator.serviceWorker.register(swPath, {
+                        scope: basePath
+                    });
                     
                     await navigator.serviceWorker.ready;
                     

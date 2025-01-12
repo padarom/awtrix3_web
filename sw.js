@@ -1,3 +1,4 @@
+const GITHUB_PAGES_PATH = '/awtrix3_web_test';
 let espIpAddress = '';
 
 // Listen for messages from the main app
@@ -10,10 +11,13 @@ self.addEventListener('message', (event) => {
 self.addEventListener('fetch', (event) => {
     const url = new URL(event.request.url);
     
+    // Remove the GitHub Pages path prefix for API requests
+    const path = url.pathname.replace(GITHUB_PAGES_PATH, '');
+    
     // Check if the request is for the ESP API
-    if (url.pathname.startsWith('/api/')) {
+    if (path.startsWith('/api/')) {
         event.respondWith(
-            handleApiRequest(event.request)
+            handleApiRequest(event.request, path)
         );
         return;
     }
@@ -22,26 +26,25 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(fetch(event.request));
 });
 
-async function handleApiRequest(request) {
+async function handleApiRequest(request, path) {
     if (!espIpAddress) {
         return new Response('ESP IP not configured', { status: 500 });
     }
 
-    // Clone the request
-    const modifiedRequest = new Request(
-        `http://${espIpAddress}${new URL(request.url).pathname}`,
-        {
+    try {
+        // Create the ESP API URL
+        const espUrl = `http://${espIpAddress}${path}`;
+        
+        // Clone the request with the new URL
+        const modifiedRequest = new Request(espUrl, {
             method: request.method,
             headers: request.headers,
             body: request.method !== 'GET' ? request.body : undefined,
             mode: 'cors'
-        }
-    );
+        });
 
-    try {
         const response = await fetch(modifiedRequest);
         
-        // Create a new response with CORS headers
         return new Response(response.body, {
             status: response.status,
             statusText: response.statusText,
@@ -51,7 +54,10 @@ async function handleApiRequest(request) {
             }
         });
     } catch (error) {
-        return new Response(JSON.stringify({ error: 'Failed to connect to ESP' }), {
+        return new Response(JSON.stringify({ 
+            error: 'Failed to connect to ESP',
+            details: error.message 
+        }), {
             status: 502,
             headers: {
                 'Content-Type': 'application/json',
@@ -61,19 +67,16 @@ async function handleApiRequest(request) {
     }
 }
 
-// Cache name for PWA
+// Update cache paths for GitHub Pages
 const CACHE_NAME = 'awtrix3-web-v1';
-
-// Install event - cache basic resources
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
             return cache.addAll([
-                '/',
-                '/index.html',
-                '/css/style.css',
-                '/js/script.js'
-                // Add other resources you want to cache
+                GITHUB_PAGES_PATH + '/',
+                GITHUB_PAGES_PATH + '/index.html',
+                GITHUB_PAGES_PATH + '/css/style.css',
+                GITHUB_PAGES_PATH + '/js/script.js'
             ]);
         })
     );

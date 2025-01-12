@@ -2,16 +2,16 @@
 async function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
         try {
-            const registration = await navigator.serviceWorker.register('/sw.js');
-            console.log('ServiceWorker registration successful');
+            const basePath = '/awtrix3_web_test';
+            const registration = await navigator.serviceWorker.register(`${basePath}/sw.js`, {
+                scope: basePath
+            });
             
             // Get the ESP IP from localStorage or use a default
             const espIp = localStorage.getItem('espIpAddress') || '192.168.178.111';
             
-            // Wait for the service worker to be ready
             await navigator.serviceWorker.ready;
             
-            // Send the ESP IP to the service worker
             if (registration.active) {
                 registration.active.postMessage({
                     type: 'SET_ESP_IP',
