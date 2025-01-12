@@ -88,6 +88,16 @@ function initializeSettings() {
         input.addEventListener('change', () => {
             const [r, g, b] = Array.from(tempInputs).map(input => parseInt(input.value));
             const colorValue = (r << 16) | (g << 8) | b;
+            updateSetting('C_CORRECTION', colorValue);
+        });
+    });
+
+    // Special handler for color temperature
+    const tempInputs = document.querySelectorAll('.color-setting')[1].querySelectorAll('input');
+    tempInputs.forEach(input => {
+        input.addEventListener('change', () => {
+            const [r, g, b] = Array.from(tempInputs).map(input => parseInt(input.value));
+            const colorValue = (r << 16) | (g << 8) | b;
             updateSetting('C_TEMPERATURE', colorValue);
         });
     });
@@ -227,7 +237,7 @@ async function handleSettingChange(event) {
     await updateSetting(id, value);
 }
 
-// Update updateSetting to handle security correctly
+// Update updateSetting to use proxyFetch correctly
 async function updateSetting(key, value) {
     try {
         const settingsData = {
@@ -249,7 +259,6 @@ async function updateSetting(key, value) {
         } else {
             showToast('Error saving setting', 'error');
         }
-
     } catch (error) {
         console.error('Error updating setting:', error);
         showToast('Error saving setting', 'error');

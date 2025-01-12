@@ -30,16 +30,18 @@ function updateRecordingTime() {
 // Check if we're in an iframe
 const isIframe = window !== window.parent;
 
-// Modified proxyFetch function
+// Enhanced proxyFetch function
 function proxyFetch(url, options = {}) {
-    // Remove the full URL if we're in an iframe
-    const targetUrl = window !== window.parent ? url.replace(BASE_URL, '') : url;
-
-    // If not in iframe, make direct request
-    if (window === window.parent) {
+    const targetUrl = isIframe ? url.replace(BASE_URL, '') : url;
+    
+    if (!isIframe) {
         console.log('Direct request:', targetUrl);
         return fetch(targetUrl, options)
-            .then(res => options.method === 'POST' ? { success: true } : res.json())
+            .then(async res => {
+                if (!res.ok) throw new Error('Request failed');
+                if (options.method === 'POST') return { success: true };
+                return res.json();
+            })
             .catch(err => {
                 console.error('Direct fetch error:', err);
                 throw err;
@@ -48,28 +50,29 @@ function proxyFetch(url, options = {}) {
 
     return new Promise((resolve, reject) => {
         const messageId = Date.now().toString();
-
+        const timeout = setTimeout(() => {
+            window.removeEventListener('message', handler);
+            reject(new Error('Request timeout'));
+        }, 5000);
 
         const handler = (event) => {
-
             if (event.data.id !== messageId) return;
-
-
+            
+            clearTimeout(timeout);
             window.removeEventListener('message', handler);
-
+            
             if (event.data.success) {
                 resolve(event.data.data);
             } else {
-                console.error('Proxy fetch error:', event.data.error);
                 reject(new Error(event.data.error));
             }
         };
 
         window.addEventListener('message', handler);
-
+        
         const message = {
             id: messageId,
-            url,
+            url: targetUrl,
             method: options.method || 'GET',
             body: options.body
         };
