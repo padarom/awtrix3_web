@@ -13,7 +13,7 @@ export function getBaseUrl() {
     } else {
         // Direct access - use stored IP or default
         alert('Direct access');
-        return `http://192.168.178.111`;
+        return `http://${localStorage.getItem('espIp') || '192.168.178.111'}`;
     }
 }
 
@@ -55,7 +55,6 @@ export function proxyFetch(url, options = {}) {
     });
 }
 
-// Toast Notification System
 export function showToast(message, type = 'info') {
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
