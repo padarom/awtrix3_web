@@ -15,7 +15,7 @@ if (c) {
     d = c.getContext('2d');
     c.width = w;
     c.height = h;
-}
+}f
 
 function updateRecordingTime() {
     const recordTimeElement = document.getElementById('recordTime');

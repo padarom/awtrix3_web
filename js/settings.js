@@ -1,100 +1,64 @@
-const BASE_URL = 'http://192.168.178.111';
+// Replace const BASE_URL with dynamic version
+const BASE_URL = (() => {
+    const espIp = localStorage.getItem('espIp') || '192.168.178.111';
+    return `http://${espIp}`;
+})();
 
-// Initialize settings listeners
-function initializeSettings() {
-    loadSettings(); // Load settings when initializing
+// Check if we're in an iframe
+const isIframe = window !== window.parent;
 
-    // Handle input changes for text and number inputs
-    document.querySelectorAll('.settings-section input[type="text"], .settings-section input[type="number"]')
-        .forEach(input => {
-            input.addEventListener('change', handleSettingChange);
-        });
+// ProxyFetch function for settings
+function proxyFetch(url, options = {}) {
+    // Remove the full URL if we're in an iframe
+    const targetUrl = window !== window.parent ? url.replace(BASE_URL, '') : url;
+    
+    // If not in iframe, make direct request
+    if (window === window.parent) {
+        return fetch(targetUrl, options)
+            .then(res => res.json())
+            .catch(err => {
+                console.error('Direct fetch error:', err);
+                throw err;
+            });
+    }
 
-    // Handle checkbox changes
-    document.querySelectorAll('.settings-section input[type="checkbox"]')
-        .forEach(checkbox => {
-            checkbox.addEventListener('change', handleSettingChange);
-        });
-
-    // Handle select changes
-    document.querySelectorAll('.settings-section select')
-        .forEach(select => {
-            select.addEventListener('change', handleSettingChange);
-        });
-
-    // Special handler for color correction
-    const colorInputs = document.querySelector('.color-setting').querySelectorAll('input');
-    colorInputs.forEach(input => {
-        input.addEventListener('change', () => {
-            const [r, g, b] = Array.from(colorInputs).map(input => parseInt(input.value));
-            // Convert RGB to uint32_t
-            const colorValue = (r << 16) | (g << 8) | b;
-            updateSetting('C_CORRECTION', colorValue);
-        });
-    });
-
-    // Special handler for color temperature
-    const tempInputs = document.querySelectorAll('.color-setting')[1].querySelectorAll('input');
-    tempInputs.forEach(input => {
-        input.addEventListener('change', () => {
-            const [r, g, b] = Array.from(tempInputs).map(input => parseInt(input.value));
-            const colorValue = (r << 16) | (g << 8) | b;
-            updateSetting('C_TEMPERATURE', colorValue);
-        });
-    });
-
-    // Special handler for all color inputs
-    document.querySelectorAll('input[type="color"]').forEach(input => {
-        const toggleId = input.id + '_enabled';
-        const toggle = document.getElementById(toggleId);
-
-        // Handle toggle changes
-        toggle?.addEventListener('change', (e) => {
-            input.disabled = !e.target.checked;
-            if (!e.target.checked) {
-                updateSetting(input.id, 0); // Disable color (value 0)
+    return new Promise((resolve, reject) => {
+        const messageId = Date.now().toString();
+        
+        const handler = (event) => {
+            if (event.data.id !== messageId) return;
+            
+            window.removeEventListener('message', handler);
+            
+            if (event.data.success) {
+                resolve(event.data.data);
             } else {
-                // Send current color value when enabled
-                const hex = input.value;
-                const r = parseInt(hex.substr(1, 2), 16);
-                const g = parseInt(hex.substr(3, 2), 16);
-                const b = parseInt(hex.substr(5, 2), 16);
-                const colorValue = (r << 16) | (g << 8) | b;
-                updateSetting(input.id, colorValue);
+                reject(new Error(event.data.error));
             }
-        });
-
-        // Handle color changes (only when enabled)
-        input.addEventListener('change', (e) => {
-            if (!input.disabled) {
-                const hex = e.target.value;
-                const r = parseInt(hex.substr(1, 2), 16);
-                const g = parseInt(hex.substr(3, 2), 16);
-                const b = parseInt(hex.substr(5, 2), 16);
-                const colorValue = (r << 16) | (g << 8) | b;
-                updateSetting(e.target.id, colorValue);
-            }
-        });
-    });
-
-    // Handle static IP toggle
-    const staticIpToggle = document.getElementById('NET_STATIC');
-    const ipInputs = document.querySelectorAll('.ip-setting input');
-
-    staticIpToggle?.addEventListener('change', (e) => {
-        ipInputs.forEach(input => {
-            input.disabled = !e.target.checked;
-        });
+        };
+        
+        window.addEventListener('message', handler);
+        
+        const message = {
+            id: messageId,
+            url,
+            method: options.method || 'GET',
+            body: options.body
+        };
+        
+        window.parent.postMessage(message, '*');
     });
 }
 
 // Show or hide loading indicator
 function showLoading(show = true) {
     const loader = document.getElementById('settings-loading');
-    if (show) {
-        loader.classList.add('active');
-    } else {
-        loader.classList.remove('active');
+    if (loader) {
+        if (show) {
+            loader.classList.add('active');
+        } else {
+            loader.classList.remove('active');
+        }
     }
 }
 
@@ -102,11 +66,7 @@ function showLoading(show = true) {
 async function loadSettings() {
     showLoading(true);
     try {
-        const response = await fetch(`${BASE_URL}/api/system`);
-        if (!response.ok) {
-            throw new Error('Failed to load settings');
-        }
-        const settings = await response.json();
+        const settings = await proxyFetch(`${BASE_URL}/api/system`);
         populateSettings(settings);
     } catch (error) {
         console.error('Error loading settings:', error);
@@ -182,13 +142,9 @@ async function handleSettingChange(event) {
 
 async function updateSetting(key, value) {
     try {
-        const settingsData = {
-            [key]: value
-        };
-
-        console.log('Sending data:', settingsData); // Debug-Ausgabe
-
-        const response = await fetch(`${BASE_URL}/api/system`, {
+        const settingsData = { [key]: value };
+        
+        const response = await proxyFetch(`${BASE_URL}/api/system`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -196,16 +152,83 @@ async function updateSetting(key, value) {
             body: JSON.stringify(settingsData)
         });
 
-        if (!response.ok) {
-            showToast('Fehler beim Speichern der Einstellung', 'error');
+        if (response.success === false) {
+            showToast('Error saving setting', 'error');
             return;
         }
 
-        showToast('Einstellung gespeichert', 'success');
+        showToast('Setting saved', 'success');
 
     } catch (error) {
-        showToast('Fehler beim Speichern der Einstellung', 'error');
+        console.error('Error updating setting:', error);
+        showToast('Error saving setting', 'error');
     }
+}
+
+// Initialize settings listeners
+function initializeSettings() {
+    loadSettings(); // Load settings when initializing
+
+    // Handle input changes for text and number inputs
+    document.querySelectorAll('.settings-section input[type="text"], .settings-section input[type="number"]')
+        .forEach(input => {
+            input.addEventListener('change', handleSettingChange);
+        });
+
+    // Handle checkbox changes
+    document.querySelectorAll('.settings-section input[type="checkbox"]')
+        .forEach(checkbox => {
+            checkbox.addEventListener('change', handleSettingChange);
+        });
+
+    // Handle select changes
+    document.querySelectorAll('.settings-section select')
+        .forEach(select => {
+            select.addEventListener('change', handleSettingChange);
+        });
+
+    // Special handler for color inputs
+    document.querySelectorAll('input[type="color"]').forEach(input => {
+        const toggleId = input.id + '_enabled';
+        const toggle = document.getElementById(toggleId);
+
+        toggle?.addEventListener('change', (e) => {
+            input.disabled = !e.target.checked;
+            if (!e.target.checked) {
+                updateSetting(input.id, 0);
+            } else {
+                const hex = input.value;
+                const colorValue = hexToUint32(hex);
+                updateSetting(input.id, colorValue);
+            }
+        });
+
+        input.addEventListener('change', (e) => {
+            if (!input.disabled) {
+                const hex = e.target.value;
+                const colorValue = hexToUint32(hex);
+                updateSetting(e.target.id, colorValue);
+            }
+        });
+    });
+
+    // Handle static IP toggle
+    const staticIpToggle = document.getElementById('NET_STATIC');
+    const ipInputs = document.querySelectorAll('.ip-setting input');
+
+    staticIpToggle?.addEventListener('change', (e) => {
+        ipInputs.forEach(input => {
+            input.disabled = !e.target.checked;
+        });
+    });
+}
+
+// Helper function to convert hex color to uint32
+function hexToUint32(hex) {
+    const r = parseInt(hex.substr(1, 2), 16);
+    const g = parseInt(hex.substr(3, 2), 16);
+    const b = parseInt(hex.substr(5, 2), 16);
+    return (r << 16) | (g << 8) | b;
 }
 
 // Toast Notification System
@@ -233,4 +256,4 @@ function showToast(message, type = 'info') {
 }
 
 // Initialize when DOM is loaded
-initializeSettings();
+document.addEventListener('DOMContentLoaded', initializeSettings);
