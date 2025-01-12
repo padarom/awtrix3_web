@@ -54,6 +54,29 @@ function proxyFetch(url, options = {}) {
     });
 }
 
+// Add image proxy function
+async function getProxiedImage(url) {
+    if (!isIframe) return url;
+    
+    // For iframe: fetch image as blob through postMessage
+    const response = await proxyFetch(url, {
+        method: 'GET',
+        responseType: 'blob'
+    });
+    
+    // Convert the base64 response back to blob URL
+    if (response && response.data) {
+        const binary = atob(response.data.split(',')[1]);
+        const array = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+            array[i] = binary.charCodeAt(i);
+        }
+        const blob = new Blob([array], {type: 'image/png'});
+        return URL.createObjectURL(blob);
+    }
+    return url;
+}
+
 // Update loadIconsFromESP to use relative URLs in iframe
 async function loadIconsFromESP() {
     try {
@@ -62,15 +85,15 @@ async function loadIconsFromESP() {
         const container = document.getElementById('esp-icon-grid');
         container.innerHTML = '';
 
-        data.forEach(item => {
+        for (const item of data) {
             if (item.type === "file") {
                 const iconName = item.name;
                 const item_div = document.createElement('div');
                 item_div.className = 'icon-item';
                 
-                // Use relative path for image src in iframe
+                // Get proxied image URL
                 const imgSrc = isIframe ? 
-                    `${ICONS_PATH}/${iconName}` : 
+                    await getProxiedImage(`${ICONS_PATH}/${iconName}`) : 
                     `${BASE_URL}${ICONS_PATH}/${iconName}`;
 
                 item_div.innerHTML = `
@@ -92,7 +115,7 @@ async function loadIconsFromESP() {
 
                 container.appendChild(item_div);
             }
-        });
+        }
     } catch (error) {
         console.error('Error loading icons:', error);
         showToast('Error loading icons', 'error');
