@@ -147,11 +147,13 @@ function showLoading(show = true) {
     }
 }
 
-// Fetch all settings from server
+// Update loadSettings to handle security correctly
 async function loadSettings() {
     showLoading(true);
     try {
-        const settings = await proxyFetch(`${BASE_URL}/api/system`);
+        // Use relative URL if in iframe
+        const url = isIframe ? '/api/system' : `${BASE_URL}/api/system`;
+        const settings = await proxyFetch(url);
         populateSettings(settings);
     } catch (error) {
         console.error('Error loading settings:', error);
@@ -225,15 +227,16 @@ async function handleSettingChange(event) {
     await updateSetting(id, value);
 }
 
+// Update updateSetting to handle security correctly
 async function updateSetting(key, value) {
     try {
         const settingsData = {
             [key]: value
         };
 
-        console.log('Sending data:', settingsData);
-
-        const response = await proxyFetch(`${BASE_URL}/api/system`, {
+        // Use relative URL if in iframe
+        const url = isIframe ? '/api/system' : `${BASE_URL}/api/system`;
+        const response = await proxyFetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
