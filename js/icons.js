@@ -111,7 +111,8 @@ async function formDataToObject(formData) {
         
         return {
             isFile: true,
-            name: formData.get('file') ? file.name : 'ICONS/' + formData.get('upfile').name,
+            // Remove ICONS prefix since it's already in the path
+            name: formData.get('file') ? file.name : formData.get('upfile').name,
             data: base64
         };
     }
@@ -121,7 +122,8 @@ async function formDataToObject(formData) {
 // Update uploadIcon to handle FormData conversion
 async function uploadIcon(file) {
     const formData = new FormData();
-    formData.append('file', file, ICONS_PATH + '/' + file.name);
+    // Remove ICONS from here since it's part of ICONS_PATH
+    formData.append('file', file, file.name);
 
     try {
         const formDataObj = await formDataToObject(formData);
@@ -288,7 +290,8 @@ async function downloadLametricImage() {
 // Update sendBlob to handle FormData conversion
 async function sendBlob(blob, iconId, extension) {
     const formData = new FormData();
-    formData.append("upfile", blob, "ICONS/" + iconId + extension);
+    // Remove ICONS from here since it's part of ICONS_PATH
+    formData.append("upfile", blob, iconId + extension);
 
     try {
         const formDataObj = await formDataToObject(formData);
