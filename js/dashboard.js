@@ -1,18 +1,17 @@
+import { AWTRIX_API, formatters, showToast } from './utils.js';
 import { GIFEncoder, quantize, applyPalette } from 'https://unpkg.com/gifenc@1.0.3';
-import { getBaseUrl, proxyFetch } from './utils.js';
 
-const BASE_URL = getBaseUrl();
+const api = AWTRIX_API.getInstance();
+const canvas = document.getElementById('c');
+let ctx, gifEncoder, isRecording = false, lastDrawTime = performance.now();
+let recordingStartTime = 0, recordingTimer = null;
+const STATS_REFRESH_INTERVAL = 5000;
 
-const c = document.getElementById('c');
-let d, w = 1052, h = 260, e, f = false, g = performance.now();
-let recordingStartTime = 0;
-let recordingTimer = null;
-
-if (c) {
-    d = c.getContext('2d');
-    c.width = w;
-    c.height = h;
-} f
+if (canvas) {
+    ctx = canvas.getContext('2d');
+    canvas.width = 1052;
+    canvas.height = 260;
+}
 
 function updateRecordingTime() {
     const recordTimeElement = document.getElementById('recordTime');
@@ -31,27 +30,27 @@ const isIframe = window !== window.parent;
 function j() {
     proxyFetch(`${BASE_URL}/api/screen`)
         .then(data => {
-            if (!d) return; // Canvas nicht verfügbar
-            d.clearRect(0, 0, c.width, c.height);
+            if (!ctx) return; // Canvas nicht verfügbar
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             for (let b = 0; b < 8; b++) {
                 for (let i = 0; i < 32; i++) {
                     const k = data[b * 32 + i];
                     const l = (k & 0xff0000) >> 16;
                     const m = (k & 0x00ff00) >> 8;
                     const n = k & 0x0000ff;
-                    d.fillStyle = `rgb(${l},${m},${n})`;
-                    d.fillRect(i * 33, b * 33, 29, 29);
+                    ctx.fillStyle = `rgb(${l},${m},${n})`;
+                    ctx.fillRect(i * 33, b * 33, 29, 29);
                 }
             }
-            if (f) {
+            if (isRecording) {
                 const o = performance.now();
-                const p = Math.round(o - g);
-                g = o;
-                const q = d.getImageData(0, 0, w, h).data;
+                const p = Math.round(o - lastDrawTime);
+                lastDrawTime = o;
+                const q = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
                 const r = "rgb444";
                 const s = quantize(q, 256, { format: r });
                 const t = applyPalette(q, s, r);
-                e.writeFrame(t, w, h, {
+                gifEncoder.writeFrame(t, canvas.width, canvas.height, {
                     palette: s,
                     delay: p
                 });
@@ -64,7 +63,7 @@ function j() {
 // Event-Listener für Buttons
 document.getElementById("downloadpng")?.addEventListener("click", () => {
     const a = document.createElement("a");
-    a.href = c?.toDataURL();
+    a.href = canvas?.toDataURL();
     a.download = 'awtrix.png';
     a.click();
 });
@@ -83,20 +82,20 @@ document.getElementById("startgif")?.addEventListener("click", async function ()
     const button = this;
     const span = button.querySelector('span:not(.record-time)');
 
-    if (f) {
+    if (isRecording) {
         // Stop recording
-        e.finish();
-        const b = e.bytesView();
+        gifEncoder.finish();
+        const b = gifEncoder.bytesView();
         l(b, 'awtrix.gif', 'image/gif');
-        f = false;
+        isRecording = false;
         span.textContent = "Record GIF";
         clearInterval(recordingTimer);
         document.getElementById('recordTime').textContent = '';
     } else {
         // Start recording
-        e = GIFEncoder();
-        g = performance.now();
-        f = true;
+        gifEncoder = GIFEncoder();
+        lastDrawTime = performance.now();
+        isRecording = true;
         span.textContent = "Stop Recording";
         recordingStartTime = Date.now();
         updateRecordingTime();
@@ -131,12 +130,11 @@ function formatBytes(bytes) {
 }
 
 let statsInterval;
-const STATS_REFRESH_INTERVAL = 5000; // 5 seconds
 
 // Enhanced stats fetching with error handling and retry
 async function fetchStats() {
     try {
-        const stats = await proxyFetch(`${BASE_URL}/api/stats`);
+        const stats = await api.getStats();
         updateStatsDisplay(stats);
         return true;
     } catch (error) {
@@ -243,13 +241,13 @@ document.getElementById('fullscreen')?.addEventListener('click', () => {
 // Responsive Canvas-Anpassung
 function resizeCanvas() {
     const container = document.getElementById('container-live');
-    if (!container || !c) return;
+    if (!container || !canvas) return;
 
     const containerWidth = container.clientWidth;
     const scale = containerWidth / 1052;
 
-    c.style.width = `${containerWidth}px`;
-    c.style.height = `${260 * scale}px`;
+    canvas.style.width = `${containerWidth}px`;
+    canvas.style.height = `${260 * scale}px`;
 }
 
 // Event Listener für Resize
