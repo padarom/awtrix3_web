@@ -54,33 +54,31 @@ function proxyFetch(url, options = {}) {
     });
 }
 
-// Add image proxy function
+// Modified getProxiedImage function to handle both blob and base64
 async function getProxiedImage(url) {
     if (!isIframe) return url;
     
-    // For iframe: fetch image as blob through postMessage
-    const response = await proxyFetch(url, {
-        method: 'GET',
-        responseType: 'blob'
-    });
-    
-    // Convert the base64 response back to blob URL
-    if (response && response.data) {
-        const binary = atob(response.data.split(',')[1]);
-        const array = new Uint8Array(binary.length);
-        for (let i = 0; i < binary.length; i++) {
-            array[i] = binary.charCodeAt(i);
+    try {
+        const response = await proxyFetch(url, {
+            method: 'GET',
+            headers: {
+                'Accept': 'image/*'
+            }
+        });
+        
+        if (response && response.data) {
+            return response.data; // Base64 data URL from server
         }
-        const blob = new Blob([array], {type: 'image/png'});
-        return URL.createObjectURL(blob);
+        return url;
+    } catch (error) {
+        console.error('Error loading image:', error);
+        return url;
     }
-    return url;
 }
 
-// Update loadIconsFromESP to use relative URLs in iframe
+// Update loadIconsFromESP to handle base64 images
 async function loadIconsFromESP() {
     try {
-        // Use relative URL if in iframe
         const data = await proxyFetch(isIframe ? '/list?dir=/ICONS' : `${BASE_URL}/list?dir=${ICONS_PATH}`);
         const container = document.getElementById('esp-icon-grid');
         container.innerHTML = '';
@@ -91,10 +89,9 @@ async function loadIconsFromESP() {
                 const item_div = document.createElement('div');
                 item_div.className = 'icon-item';
                 
-                // Get proxied image URL
-                const imgSrc = isIframe ? 
-                    await getProxiedImage(`${ICONS_PATH}/${iconName}`) : 
-                    `${BASE_URL}${ICONS_PATH}/${iconName}`;
+                // Use relative URL and get proxied image
+                const imgUrl = isIframe ? `${ICONS_PATH}/${iconName}` : `${BASE_URL}${ICONS_PATH}/${iconName}`;
+                const imgSrc = await getProxiedImage(imgUrl);
 
                 item_div.innerHTML = `
                     <div class="icon-preview">
