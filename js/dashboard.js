@@ -15,12 +15,12 @@ if (c) {
     d = c.getContext('2d');
     c.width = w;
     c.height = h;
-}f
+} f
 
 function updateRecordingTime() {
     const recordTimeElement = document.getElementById('recordTime');
     if (!recordTimeElement) return;
-    
+
     const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
     const minutes = Math.floor(elapsed / 60);
     const seconds = elapsed % 60;
@@ -34,12 +34,12 @@ const isIframe = window !== window.parent;
 function proxyFetch(url, options = {}) {
     // Remove the full URL if we're in an iframe
     const targetUrl = window !== window.parent ? url.replace(BASE_URL, '') : url;
-    
+
     // If not in iframe, make direct request
     if (window === window.parent) {
         console.log('Direct request:', targetUrl);
         return fetch(targetUrl, options)
-            .then(res => options.method === 'POST' ? {success: true} : res.json())
+            .then(res => options.method === 'POST' ? { success: true } : res.json())
             .catch(err => {
                 console.error('Direct fetch error:', err);
                 throw err;
@@ -48,16 +48,15 @@ function proxyFetch(url, options = {}) {
 
     return new Promise((resolve, reject) => {
         const messageId = Date.now().toString();
-        
-        console.log('Setting up message handler for ID:', messageId);
-        
+
+
         const handler = (event) => {
-            console.log('Received response:', event.data);
+
             if (event.data.id !== messageId) return;
-            
-            console.log('Matching message ID found:', messageId);
+
+
             window.removeEventListener('message', handler);
-            
+
             if (event.data.success) {
                 resolve(event.data.data);
             } else {
@@ -65,17 +64,16 @@ function proxyFetch(url, options = {}) {
                 reject(new Error(event.data.error));
             }
         };
-        
+
         window.addEventListener('message', handler);
-        
+
         const message = {
             id: messageId,
             url,
             method: options.method || 'GET',
             body: options.body
         };
-        
-        console.log('Sending postMessage:', message);
+
         window.parent.postMessage(message, '*');
     });
 }
@@ -135,7 +133,7 @@ document.getElementById("previousapp")?.addEventListener("click", () => {
 document.getElementById("startgif")?.addEventListener("click", async function () {
     const button = this;
     const span = button.querySelector('span:not(.record-time)');
-    
+
     if (f) {
         // Stop recording
         e.finish();
@@ -189,16 +187,16 @@ async function fetchAndDisplayStats() {
         const stats = await proxyFetch(`${BASE_URL}/api/stats`);
         // Update RAM metrics
         document.getElementById('ramValue').textContent = `${formatBytes(stats.usedRam)} / ${formatBytes(stats.totalRam)}`;
-        
+
         // Update Flash metrics
         document.getElementById('flashValue').textContent = `${formatBytes(stats.usedFlash)} / ${formatBytes(stats.totalFlash)}`;
-        
+
         // Update Uptime
         document.getElementById('uptimeValue').textContent = formatUptime(stats.uptime);
-        
+
         // Update WiFi Signal
         document.getElementById('wifiValue').textContent = `${stats.wifi_signal} dB`;
-        
+
         // Update Current App
         document.getElementById('currentApp').textContent = stats.app || 'None';
     } catch (error) {
@@ -240,7 +238,7 @@ function initMessageChart() {
 
 function updateMessageChart(history) {
     if (!messageChart) return;
-    
+
     messageChart.data.labels = history.map((_, i) => `${i}m ago`);
     messageChart.data.datasets[0].data = history;
     messageChart.update();
@@ -258,10 +256,10 @@ document.getElementById('fullscreen')?.addEventListener('click', () => {
 function resizeCanvas() {
     const container = document.getElementById('container-live');
     if (!container || !c) return;
-    
+
     const containerWidth = container.clientWidth;
     const scale = containerWidth / 1052;
-    
+
     c.style.width = `${containerWidth}px`;
     c.style.height = `${260 * scale}px`;
 }
