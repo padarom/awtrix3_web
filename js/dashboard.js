@@ -23,10 +23,36 @@ function updateRecordingTime() {
     recordTimeElement.textContent = ` (${minutes}:${seconds.toString().padStart(2, '0')})`;
 }
 
+// Add this at the top of the file
+function proxyFetch(url, options = {}) {
+    return new Promise((resolve, reject) => {
+        const messageId = Date.now().toString();
+        
+        const handler = (event) => {
+            if (event.data.id !== messageId) return;
+            window.removeEventListener('message', handler);
+            
+            if (event.data.success) {
+                resolve(event.data.data);
+            } else {
+                reject(new Error(event.data.error));
+            }
+        };
+        
+        window.addEventListener('message', handler);
+        
+        window.parent.postMessage({
+            id: messageId,
+            url,
+            method: options.method || 'GET',
+            body: options.body
+        }, '*');
+    });
+}
+
 // Fetch und Canvas-Rendering-Funktion
 function j() {
-    fetch(`${BASE_URL}/api/screen`)
-        .then(response => response.json())
+    proxyFetch(`${BASE_URL}/api/screen`)
         .then(data => {
             if (!d) return; // Canvas nicht verfügbar
             d.clearRect(0, 0, c.width, c.height);
@@ -129,13 +155,10 @@ function formatBytes(bytes) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
+// Modify other fetch calls similarly
 async function fetchAndDisplayStats() {
     try {
-        const response = await fetch(`${BASE_URL}/api/stats`);
-        if (!response.ok) throw new Error('Failed to load statistics');
-        
-        const stats = await response.json();
-        
+        const stats = await proxyFetch(`${BASE_URL}/api/stats`);
         // Update RAM metrics
         document.getElementById('ramValue').textContent = `${formatBytes(stats.usedRam)} / ${formatBytes(stats.totalRam)}`;
         
