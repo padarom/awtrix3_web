@@ -2,8 +2,8 @@
 async function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
         try {
-            const basePath = '/awtrix3_web_test';
-            const registration = await navigator.serviceWorker.register(`${basePath}/sw.js`, {
+            const basePath = '/awtrix3_web_test/';  // Add trailing slash
+            const registration = await navigator.serviceWorker.register(`${basePath}sw.js`, {
                 scope: basePath
             });
             
@@ -18,6 +18,7 @@ async function registerServiceWorker() {
                     ip: espIp
                 });
             }
+            console.log('ServiceWorker registration successful with scope:', registration.scope);
         } catch (error) {
             console.error('ServiceWorker registration failed:', error);
         }

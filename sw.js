@@ -1,4 +1,4 @@
-const GITHUB_PAGES_PATH = '/awtrix3_web_test';
+const GITHUB_PAGES_PATH = '/awtrix3_web_test/';  // Add trailing slash
 let espIpAddress = '';
 
 // Listen for messages from the main app
@@ -12,7 +12,7 @@ self.addEventListener('fetch', (event) => {
     const url = new URL(event.request.url);
     
     // Remove the GitHub Pages path prefix for API requests
-    const path = url.pathname.replace(GITHUB_PAGES_PATH, '');
+    const path = url.pathname.replace(GITHUB_PAGES_PATH, '/');
     
     // Check if the request is for the ESP API
     if (path.startsWith('/api/')) {
@@ -32,28 +32,51 @@ async function handleApiRequest(request, path) {
     }
 
     try {
-        // Create the ESP API URL
+        // Create the ESP API URL with cleaned path
         const espUrl = `http://${espIpAddress}${path}`;
-        
+        console.log('Proxying request to:', espUrl);
+
         // Clone the request with the new URL
         const modifiedRequest = new Request(espUrl, {
             method: request.method,
-            headers: request.headers,
+            headers: new Headers({
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }),
             body: request.method !== 'GET' ? request.body : undefined,
             mode: 'cors'
         });
 
         const response = await fetch(modifiedRequest);
         
-        return new Response(response.body, {
+        // Stream the response to handle large responses better
+        const reader = response.body.getReader();
+        const stream = new ReadableStream({
+            start(controller) {
+                return pump();
+                function pump() {
+                    return reader.read().then(({done, value}) => {
+                        if (done) {
+                            controller.close();
+                            return;
+                        }
+                        controller.enqueue(value);
+                        return pump();
+                    });
+                }
+            }
+        });
+
+        return new Response(stream, {
             status: response.status,
             statusText: response.statusText,
             headers: {
                 'Access-Control-Allow-Origin': '*',
-                'Content-Type': response.headers.get('Content-Type') || 'application/json',
+                'Content-Type': 'application/json'
             }
         });
     } catch (error) {
+        console.error('Proxy error:', error);
         return new Response(JSON.stringify({ 
             error: 'Failed to connect to ESP',
             details: error.message 
