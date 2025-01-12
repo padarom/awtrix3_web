@@ -70,52 +70,37 @@ async function handleApiRequest(request, path) {
         const espUrl = `http://${espIpAddress}${path}`;
         console.log('SW: Proxying request to:', espUrl);
 
-        const modifiedRequest = new Request(espUrl, {
-            method: request.method,
-            mode: 'no-cors',
-            cache: 'no-cache',
-            headers: {
-                'Accept': '*/*'
-            }
-        });
-
-        console.log('SW: Modified request:', {
-            url: modifiedRequest.url,
-            method: modifiedRequest.method,
-            mode: modifiedRequest.mode,
-            headers: Array.from(modifiedRequest.headers.entries())
-        });
-
-        const response = await fetch(modifiedRequest);
-        console.log('SW: ESP response received:', {
-            status: response.status,
-            statusText: response.statusText,
-            headers: Array.from(response.headers.entries())
-        });
-
-        // For no-cors responses, we need to handle the data differently
-        let responseData;
-        try {
-            // Try to get response as JSON
-            responseData = await response.clone().json();
-        } catch (e) {
-            try {
-                // If JSON fails, try to get as text
-                responseData = await response.text();
-                try {
-                    // Try to parse text as JSON
-                    responseData = JSON.parse(responseData);
-                } catch (e) {
-                    // If parsing fails, return as-is
-                    console.log('Response is not JSON:', responseData);
+        // Create a simple XMLHttpRequest to bypass CORS
+        const data = await new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open(request.method, espUrl, true);
+            
+            xhr.onload = () => {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    try {
+                        const response = xhr.responseText;
+                        console.log('SW: Raw response:', response);
+                        resolve(response);
+                    } catch (e) {
+                        console.error('SW: Parse error:', e);
+                        reject(e);
+                    }
+                } else {
+                    reject(new Error(`HTTP Error: ${xhr.status}`));
                 }
-            } catch (e) {
-                // If text fails, try to get as array buffer
-                responseData = await response.arrayBuffer();
-            }
-        }
+            };
+            
+            xhr.onerror = () => {
+                console.error('SW: XHR error:', xhr.statusText);
+                reject(new Error('Network error'));
+            };
 
-        return new Response(JSON.stringify(responseData), {
+            xhr.send();
+        });
+
+        console.log('SW: Response data:', data);
+
+        return new Response(data, {
             status: 200,
             headers: {
                 'Content-Type': 'application/json',
@@ -131,7 +116,7 @@ async function handleApiRequest(request, path) {
             stack: error.stack,
             path: path
         });
-        // Return a more detailed error response
+        
         return new Response(JSON.stringify({ 
             error: 'Failed to connect to ESP',
             details: error.message,
@@ -161,17 +146,22 @@ self.addEventListener('install', (event) => {
     );
 });
 
-// Activate event - cleanup old caches
+// Ensure service worker activation and claim clients immediately
 self.addEventListener('activate', (event) => {
     event.waitUntil(
-        caches.keys().then((cacheNames) => {
-            return Promise.all(
-                cacheNames.map((cacheName) => {
-                    if (cacheName !== CACHE_NAME) {
-                        return caches.delete(cacheName);
-                    }
-                })
-            );
-        })
+        Promise.all([
+            // Clear old caches
+            caches.keys().then((cacheNames) => {
+                return Promise.all(
+                    cacheNames.map((cacheName) => {
+                        if (cacheName !== CACHE_NAME) {
+                            return caches.delete(cacheName);
+                        }
+                    })
+                );
+            }),
+            // Claim clients immediately
+            self.clients.claim()
+        ])
     );
 });
