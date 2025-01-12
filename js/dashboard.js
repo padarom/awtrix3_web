@@ -1,11 +1,5 @@
 import { GIFEncoder, quantize, applyPalette } from 'https://unpkg.com/gifenc@1.0.3';
 
-// Replace const BASE_URL with dynamic version
-const BASE_URL = (() => {
-    const espIp = localStorage.getItem('espIp') || '192.168.178.111';
-    return `http://${espIp}`;
-})();
-
 const c = document.getElementById('c');
 let d, w = 1052, h = 260, e, f = false, g = performance.now();
 let recordingStartTime = 0;
@@ -30,57 +24,48 @@ function updateRecordingTime() {
 // Check if we're in an iframe
 const isIframe = window !== window.parent;
 
-// Modified proxyFetch function
+// Instead of determining BASE_URL, we'll work directly with relative paths in iframe mode
 function proxyFetch(url, options = {}) {
-    // Remove the full URL if we're in an iframe
-    const targetUrl = window !== window.parent ? url.replace(BASE_URL, '') : url;
+    // If we're in an iframe, use relative paths
+    if (window !== window.parent) {
+        const relativePath = url.replace(/^http:\/\/[^/]+/, '');
+        
+        return new Promise((resolve, reject) => {
+            const messageId = Date.now().toString();
+            
+            const handler = (event) => {
+                if (event.data.id !== messageId) return;
+                window.removeEventListener('message', handler);
+                
+                if (event.data.success) {
+                    resolve(event.data.data);
+                } else {
+                    reject(new Error(event.data.error));
+                }
+            };
 
-    // If not in iframe, make direct request
-    if (window === window.parent) {
-        console.log('Direct request:', targetUrl);
-        return fetch(targetUrl, options)
-            .then(res => options.method === 'POST' ? { success: true } : res.json())
-            .catch(err => {
-                console.error('Direct fetch error:', err);
-                throw err;
-            });
+            window.addEventListener('message', handler);
+            window.parent.postMessage({
+                id: messageId,
+                url: relativePath,
+                method: options.method || 'GET',
+                body: options.body
+            }, '*');
+        });
     }
 
-    return new Promise((resolve, reject) => {
-        const messageId = Date.now().toString();
-
-
-        const handler = (event) => {
-
-            if (event.data.id !== messageId) return;
-
-
-            window.removeEventListener('message', handler);
-
-            if (event.data.success) {
-                resolve(event.data.data);
-            } else {
-                console.error('Proxy fetch error:', event.data.error);
-                reject(new Error(event.data.error));
-            }
-        };
-
-        window.addEventListener('message', handler);
-
-        const message = {
-            id: messageId,
-            url,
-            method: options.method || 'GET',
-            body: options.body
-        };
-
-        window.parent.postMessage(message, '*');
-    });
+    // Direct request when not in iframe
+    return fetch(url, options)
+        .then(res => options.method === 'POST' ? { success: true } : res.json())
+        .catch(err => {
+            console.error('Direct fetch error:', err);
+            throw err;
+        });
 }
 
 // Fetch und Canvas-Rendering-Funktion
 function j() {
-    proxyFetch(`${BASE_URL}/api/screen`)
+    proxyFetch('/api/screen')
         .then(data => {
             if (!d) return; // Canvas nicht verfügbar
             d.clearRect(0, 0, c.width, c.height);
@@ -121,12 +106,12 @@ document.getElementById("downloadpng")?.addEventListener("click", () => {
 });
 
 document.getElementById("nextapp")?.addEventListener("click", () => {
-    proxyFetch(`${BASE_URL}/api/nextapp`, { method: 'POST' })
+    proxyFetch('/api/nextapp', { method: 'POST' })
         .catch(error => console.error("Error changing app:", error));
 });
 
 document.getElementById("previousapp")?.addEventListener("click", () => {
-    proxyFetch(`${BASE_URL}/api/previousapp`, { method: 'POST' })
+    proxyFetch('/api/previousapp', { method: 'POST' })
         .catch(error => console.error("Error changing app:", error));
 });
 
@@ -187,7 +172,7 @@ const STATS_REFRESH_INTERVAL = 5000; // 5 seconds
 // Enhanced stats fetching with error handling and retry
 async function fetchStats() {
     try {
-        const stats = await proxyFetch(`${BASE_URL}/api/stats`);
+        const stats = await proxyFetch('/api/stats');
         updateStatsDisplay(stats);
         return true;
     } catch (error) {
