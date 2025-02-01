@@ -1,6 +1,4 @@
-import { getBaseUrl, proxyFetch } from './utils.js';
-
-const BASE_URL = getBaseUrl();
+import { BASE_URL } from './dashboard.js';
 
 async function initializeMQTTSettings() {
     await loadMQTTSettings();
