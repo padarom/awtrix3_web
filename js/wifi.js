@@ -32,7 +32,7 @@ function togglePasswordVisibility() {
 async function updateConnectionStatus() {
     try {
         const data = await proxyFetch(`${BASE_URL}/api/stats`);
-        console.info("RESPONSE: ", data); // JSON direkt ausgeben
+        
 
         if (!data) throw new Error('Keine Daten erhalten');
 
@@ -75,7 +75,7 @@ async function handleWiFiSubmit(e) {
     };
 
     try {
-        const response = await fetch(`${BASE_URL}/api/wifi`, {
+        const response = await proxyFetch(`${BASE_URL}/api/wifi`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -83,12 +83,13 @@ async function handleWiFiSubmit(e) {
             body: JSON.stringify(formData)
         });
 
-        if (!response.ok) throw new Error('Failed to update WiFi settings');
         
+        if (!response || response.success !== true) {
+            throw new Error('Failed to update WiFi settings');
+        }
+
         showToast('WiFi settings updated successfully', 'success');
 
-      
-        
     } catch (error) {
         console.error('Error:', error);
         showToast('Failed to update WiFi settings', 'error');
