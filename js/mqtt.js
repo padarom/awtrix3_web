@@ -80,7 +80,7 @@ function setupEventListeners() {
         };
 
         try {
-            const response = await fetch(`${BASE_URL}/api/system`, {
+            const response = await proxyFetch(`${BASE_URL}/api/system`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -88,9 +88,10 @@ function setupEventListeners() {
                 body: JSON.stringify(settings)
             });
 
-            if (!response.ok) {
+            if (!response || response.success !== true) {
                 throw new Error('Failed to save MQTT settings');
             }
+           
 
             showToast('MQTT settings saved successfully', 'success');
         } catch (error) {
