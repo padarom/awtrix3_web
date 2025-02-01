@@ -1,6 +1,6 @@
-import { getBaseUrl, proxyFetch } from './utils.js';
+import { BASE_URL } from './dashboard.js';
 
-const BASE_URL = getBaseUrl();
+
 
 async function initializeNetworkSettings() {
     await loadNetworkSettings();
