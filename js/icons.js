@@ -1,4 +1,4 @@
-import { BASE_URL } from './dashboard.js';
+import { getBaseUrl, proxyFetch, BASE_URL } from './utils.js';
 
 const ICONS_PATH = '/ICONS';
 let selectedIcon = null;
