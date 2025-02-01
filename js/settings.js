@@ -118,6 +118,7 @@ async function loadSettings() {
 
 // Populate all form elements with settings
 function populateSettings(settings) {
+    console.info("[DEBUG] Erhaltene Einstellungen:", settings);
     Object.entries(settings).forEach(([key, value]) => {
         const element = document.getElementById(key);
         if (!element) return;
@@ -147,17 +148,18 @@ function populateSettings(settings) {
 
         // Handle other inputs as before
         if (element.type === 'checkbox') {
-            element.checked = value;
+            element.checked = value === true || value === "true";
         } else if (element.type === 'number' || element.type === 'text' || element.tagName === 'SELECT') {
-            element.value = value;
+            element.value = value ?? '';
         }
     });
 
     // Handle static IP fields
     if ('NET_STATIC' in settings) {
         const ipInputs = document.querySelectorAll('.ip-setting input');
+        const isStatic = settings.NET_STATIC === true || settings.NET_STATIC === "true";
         ipInputs.forEach(input => {
-            input.disabled = !settings.NET_STATIC;
+            input.disabled = !isStatic;
         });
     }
 }
@@ -198,7 +200,7 @@ async function updateSetting(key, value) {
         });
 
         // Die Antwort wird wie im Dashboard behandelt
-        if (response?.success || response === true) {
+        if (response && response.success === true) {
             showToast('Setting saved', 'success');
         } else {
             showToast('Error saving setting', 'error');
