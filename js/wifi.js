@@ -1,4 +1,4 @@
-import { getBaseUrl, BASE_URL } from './utils.js';
+import { getBaseUrl, proxyFetch, BASE_URL } from './utils.js';
 
 console.log("[DEBUG] Starte mit BASE_URL:", BASE_URL);
 
@@ -31,7 +31,7 @@ function togglePasswordVisibility() {
 
 async function updateConnectionStatus() {
     try {
-        const response = await fetch(`${BASE_URL}/api/stats`);
+        const response = await proxyFetch(`${BASE_URL}/api/stats`);
         if (!response.ok) throw new Error('Failed to fetch status');
         
         const data = await response.json();
