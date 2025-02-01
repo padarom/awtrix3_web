@@ -1,11 +1,42 @@
-export function getBaseUrl() {
-    const ws = new WebSocket(`${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}/ws`);
 
-    ws.onopen = () => {
-        console.log('WebSocket verbunden');
-        console.log(`http://${window.location.host}`);
-        return `http://${window.location.host}`;
-    };
+export function getBaseUrl() {
+    const isIframe = window !== window.parent;
+
+    console.info('Starting get BaseUrl...');
+    
+    
+    
+    if (isIframe) {
+    
+    // When in iframe, we can get the ESP IP from the parent window URL
+    
+    try {
+    
+    const parentUrl = window.parent.location.href;
+    
+    console.info('Parent Url is: ' + parentUrl);
+    
+    return `http://${new URL(parentUrl).host}`;
+    
+    } catch (e) {
+    
+    console.error("Error at get Base Url: " + e);
+    
+    // Fallback if we can't access parent URL due to CORS
+    
+    return ''; // Empty base URL for iframe mode
+    
+    }
+    
+    } else {
+    
+    // Direct access - use stored IP or default
+    
+    alert('Direct access');
+    
+    return `http://${localStorage.getItem('espIp') || '192.168.20.210'}`;
+    
+    }
 }
 
 export function proxyFetch(url, options = {}) {
