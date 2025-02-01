@@ -1,4 +1,4 @@
-import { getBaseUrl, BASE_URL } from './utils.js';
+import { getBaseUrl, proxyFetch, BASE_URL } from './utils.js';
 
 async function initializeNetworkSettings() {
     await loadNetworkSettings();
@@ -7,12 +7,15 @@ async function initializeNetworkSettings() {
 
 async function loadNetworkSettings() {
     try {
-        const response = await fetch(`${BASE_URL}/api/system`);
-        if (!response.ok) {
-            throw new Error('Failed to load settings');
+        const settings = await proxyFetch(`${BASE_URL}/api/system`);
+        console.info("NETWORK SETTINGS:", settings); 
+
+        if (!settings) {
+            throw new Error('Keine Netzwerkeinstellungen erhalten');
         }
-        const settings = await response.json();
+
         populateNetworkForm(settings);
+
     } catch (error) {
         console.error('Error loading network settings:', error);
         showToast('Error loading network settings', 'error');
@@ -20,30 +23,36 @@ async function loadNetworkSettings() {
 }
 
 function populateNetworkForm(settings) {
-    const staticIpToggle = document.getElementById('NET_STATIC');
-    const ipInputs = document.querySelectorAll('.ip-setting input');
-    
-    if (staticIpToggle && 'NET_STATIC' in settings) {
-        staticIpToggle.checked = settings.NET_STATIC;
+    const staticIpToggle = document.getElementById("NET_STATIC");
+    const ipInputs = document.querySelectorAll(".ip-setting input");
+
+    // 🟢 Sicherstellen, dass `NET_STATIC` als Boolean korrekt gesetzt wird
+    if (staticIpToggle && "NET_STATIC" in settings) {
+        staticIpToggle.checked = settings.NET_STATIC === true || settings.NET_STATIC === "true";
+        
+        // Aktivieren oder Deaktivieren der IP-Felder basierend auf `NET_STATIC`
         ipInputs.forEach(input => {
-            input.disabled = !settings.NET_STATIC;
+            input.disabled = !staticIpToggle.checked;
         });
     }
 
+    // 🟢 Mapping der Form-Felder mit Fallback-Werten
     const mappings = {
-        'NET_IP': 'NET_IP',
-        'NET_GW': 'NET_GW',
-        'NET_SN': 'NET_SN',
-        'NET_PDNS': 'NET_PDNS',
-        'NET_SDNS': 'NET_SDNS'
+        "NET_IP": "NET_IP",
+        "NET_GW": "NET_GW",
+        "NET_SN": "NET_SN",
+        "NET_PDNS": "NET_PDNS",
+        "NET_SDNS": "NET_SDNS"
     };
 
     Object.entries(mappings).forEach(([key, elementId]) => {
         const element = document.getElementById(elementId);
-        if (element && key in settings) {
-            element.value = settings[key];
+        if (element) {
+            element.value = settings[key] ?? ''; // Falls `undefined` oder `null`, setze leeren String
         }
     });
+
+    console.info("[INFO] Netzwerk-Einstellungen aktualisiert:", settings);
 }
 
 function setupEventListeners() {
