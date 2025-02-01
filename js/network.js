@@ -1,4 +1,6 @@
-const BASE_URL = window.location.origin;
+import { getBaseUrl, proxyFetch } from './utils.js';
+
+const BASE_URL = getBaseUrl();
 
 async function initializeNetworkSettings() {
     await loadNetworkSettings();
