@@ -1,6 +1,7 @@
 export function getBaseUrl() {
     const isIframe = window !== window.parent;
     console.info('Starting get BaseUrl...');
+    console.info/
     if (isIframe) {
         // When in iframe, we can get the ESP IP from the parent window URL
         try {
@@ -8,7 +9,7 @@ export function getBaseUrl() {
             console.info('Parent Url is: ' +  parentUrl);
             return `http://${new URL(parentUrl).host}`;
         } catch (e) {
-            console.error("Error at get Base Url: " + e)
+            console.error("Error at get Base Url: " + e);
             // Fallback if we can't access parent URL due to CORS
             return '';  // Empty base URL for iframe mode
         }
