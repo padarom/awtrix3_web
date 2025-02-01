@@ -1,4 +1,4 @@
-import { BASE_URL } from './dashboard.js';
+import { getBaseUrl, BASE_URL } from './utils.js';
 
 async function initializeMQTTSettings() {
     await loadMQTTSettings();

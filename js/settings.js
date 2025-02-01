@@ -1,4 +1,4 @@
-import { BASE_URL } from './dashboard.js';
+import { getBaseUrl, proxyFetch, BASE_URL } from './utils.js';
 
 // Check if we're in an iframe
 const isIframe = window !== window.parent;

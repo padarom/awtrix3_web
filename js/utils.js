@@ -1,47 +1,44 @@
+export let BASE_URL = "";
 
 export function getBaseUrl() {
     const isIframe = window !== window.parent;
+    
+    console.info("[INFO] Starte getBaseUrl...");
 
-    console.info('Starting get BaseUrl...');
-    
-    
-    
     if (isIframe) {
-    
-    // When in iframe, we can get the ESP IP from the parent window URL
-    
-    try {
-    
-    const parentUrl = window.parent.location.href;
-    
-    console.info('Parent Url is: ' + parentUrl);
-    
-    return `http://${new URL(parentUrl).host}`;
-    
-    } catch (e) {
-    
-    console.error("Error at get Base Url: " + e);
-    
-    // Fallback if we can't access parent URL due to CORS
-    
-    return ''; // Empty base URL for iframe mode
-    
-    }
-    
+        console.info("[INFO] Seite läuft im iframe-Modus");
+        
+        try {
+            // Alternative Methode: `document.referrer`
+            const referrerUrl = document.referrer;
+            
+            if (referrerUrl) {
+                const espHost = new URL(referrerUrl).host;
+                BASE_URL = `http://${espHost}`;
+                console.info("[SUCCESS] BASE_URL erkannt:", BASE_URL);
+                return BASE_URL;
+            } else {
+                throw new Error("Kein gültiger Referrer gefunden.");
+            }
+        } catch (e) {
+            console.error("[ERROR] Fehler beim Ermitteln der BASE_URL:", e);
+            return ''; // Leerer String als Fallback
+        }
+
     } else {
-    
-    // Direct access - use stored IP or default
-    
-    alert('Direct access');
-    
-    return `http://${localStorage.getItem('espIp') || '192.168.20.210'}`;
-    
+        console.info("[INFO] Seite wird direkt aufgerufen");
+
+        // Versuche gespeicherte IP zu verwenden oder Standard-IP zu setzen
+        BASE_URL = `http://${localStorage.getItem('espIp') || '192.168.20.210'}`;
+        console.info("[SUCCESS] BASE_URL gesetzt:", BASE_URL);
+
+        return BASE_URL;
     }
 }
 
 export function proxyFetch(url, options = {}) {
     const isIframe = window !== window.parent;
-    const targetUrl = isIframe ? url.replace(getBaseUrl(), '') : url;
+    const targetUrl = isIframe ? url.replace(BASE_URL, '') : url;
     
     if (!isIframe) {
         return fetch(targetUrl, options)

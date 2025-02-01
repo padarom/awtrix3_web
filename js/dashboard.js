@@ -1,7 +1,6 @@
 import { GIFEncoder, quantize, applyPalette } from 'https://unpkg.com/gifenc@1.0.3';
-import { getBaseUrl, proxyFetch } from './utils.js';
+import { getBaseUrl, proxyFetch, BASE_URL} from './utils.js';
 
-const BASE_URL = getBaseUrl();
 
 const c = document.getElementById('c');
 let d, w = 1052, h = 260, e, f = false, g = performance.now();
@@ -136,6 +135,7 @@ const STATS_REFRESH_INTERVAL = 5000; // 5 seconds
 // Enhanced stats fetching with error handling and retry
 async function fetchStats() {
     try {
+        await getBaseUrl();
         const stats = await proxyFetch(`${BASE_URL}/api/stats`);
         updateStatsDisplay(stats);
         return true;
