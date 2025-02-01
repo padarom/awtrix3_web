@@ -8,6 +8,7 @@ export function getBaseUrl() {
             console.info('Parent Url is: ' +  parentUrl);
             return `http://${new URL(parentUrl).host}`;
         } catch (e) {
+            console.error("Error at get Base Url: " + e)
             // Fallback if we can't access parent URL due to CORS
             return '';  // Empty base URL for iframe mode
         }
