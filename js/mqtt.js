@@ -1,4 +1,6 @@
-const BASE_URL = 'http://192.168.178.111';
+import { getBaseUrl, proxyFetch } from './utils.js';
+
+const BASE_URL = getBaseUrl();
 
 async function initializeMQTTSettings() {
     await loadMQTTSettings();
