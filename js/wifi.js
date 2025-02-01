@@ -1,4 +1,4 @@
-const BASE_URL = 'http://192.168.178.111';
+const BASE_URL = window.location.origin;;
 
 async function initializeWiFiPage() {
     setupEventListeners();
