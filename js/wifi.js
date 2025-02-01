@@ -31,24 +31,20 @@ function togglePasswordVisibility() {
 
 async function updateConnectionStatus() {
     try {
-        const response = await proxyFetch(`${BASE_URL}/api/stats`);
-        if (!response.ok) throw new Error('Failed to fetch status');
-        
-        const data = await response.json();
-        
-        // Update status badge
-        const statusBadge = document.getElementById('wifiStatus');
-        const signalDb = parseInt(data.wifi_signal);
-        
-        // Konvertiere dB in Prozent (typische WiFi-Werte: -50dB bis -100dB)
-        const signalStrength = Math.min(Math.max(2 * (signalDb + 100), 0), 100);
-        
+        const data = await proxyFetch(`${BASE_URL}/api/stats`);
+        console.info("RESPONSE: ", data); // JSON direkt ausgeben
 
-        // Update connection info
+        if (!data) throw new Error('Keine Daten erhalten');
+
+        // WiFi Signalstärke konvertieren
+        const signalDb = parseInt(data.wifi_signal || 0);
+        const signalStrength = Math.min(Math.max(2 * (signalDb + 100), 0), 100);
+
+        // UI-Elemente aktualisieren
         document.getElementById('currentSSID').textContent = data.ssid || '-';
         document.getElementById('currentIP').textContent = data.ip_address || '-';
-        
-        // Update signal strength with both dB and percentage
+
+        // Signalstärke aktualisieren
         const signalStrengthElement = document.getElementById('signalStrength');
         if (signalDb !== 0) {
             const signalIcon = getSignalIcon(signalStrength);

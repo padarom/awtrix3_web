@@ -39,8 +39,8 @@ export function getBaseUrl() {
 export function proxyFetch(url, options = {}) {
     const isIframe = window !== window.parent;
     const targetUrl = isIframe ? url.replace(BASE_URL, '') : url;
-    
     if (!isIframe) {
+       
         return fetch(targetUrl, options)
             .then(res => options.method === 'POST' ? { success: true } : res.json())
             .catch(err => {

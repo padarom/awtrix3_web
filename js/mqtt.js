@@ -1,4 +1,4 @@
-import { getBaseUrl, BASE_URL } from './utils.js';
+import { getBaseUrl, proxyFetch, BASE_URL } from './utils.js';
 
 async function initializeMQTTSettings() {
     await loadMQTTSettings();
@@ -7,12 +7,15 @@ async function initializeMQTTSettings() {
 
 async function loadMQTTSettings() {
     try {
-        const response = await fetch(`${BASE_URL}/api/system`);
-        if (!response.ok) {
-            throw new Error('Failed to load settings');
+        const settings = await proxyFetch(`${BASE_URL}/api/system`);
+        console.info("MQTT SETTINGS:", settings); 
+
+        if (!settings) {
+            throw new Error('Keine Einstellungen erhalten');
         }
-        const settings = await response.json();
+
         populateMQTTForm(settings);
+
     } catch (error) {
         console.error('Error loading MQTT settings:', error);
         showToast('Error loading MQTT settings', 'error');
