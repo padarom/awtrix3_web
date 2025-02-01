@@ -110,6 +110,13 @@ document.addEventListener('awtrixPageChange', (e) => {
 
 // Shared toast function (assuming it exists in your global scope)
 function showToast(message, type = 'info') {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        document.body.appendChild(container);
+    }
+
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     
@@ -121,12 +128,15 @@ function showToast(message, type = 'info') {
         <i class="fas ${icon}"></i>
         <span>${message}</span>
     `;
-    
-    const container = document.getElementById('toast-container');
+
     container.appendChild(toast);
-    
+
     setTimeout(() => {
         toast.style.animation = 'fadeOut 0.3s ease forwards';
-        setTimeout(() => toast.remove(), 300);
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 300); 
     }, 3000);
 }
