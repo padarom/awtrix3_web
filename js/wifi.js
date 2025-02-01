@@ -1,6 +1,6 @@
 import { getBaseUrl, BASE_URL } from './utils.js';
 
-console.log("[DEBUG] Starte mit BASE_URL:", getBaseUrl());
+console.log("[DEBUG] Starte mit BASE_URL:", BASE_URL);
 
 async function initializeWiFiPage() {
     setupEventListeners();
