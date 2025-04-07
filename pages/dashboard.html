@@ -1,86 +1,176 @@
 <script type="module" src="js/dashboard.js"></script>
 <div id="dashboard" class="page">
-    <div class="dashboard-grid">
-        <!-- Combined System Overview and Display Section -->
-        <section class="system-status-display">       
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">Dashboard</h1>
+        <div class="dashboard-actions">
+            <button class="btn btn-secondary" id="refreshData">
+                <i class="fas fa-sync-alt"></i> Aktualisieren
+            </button>
+        </div>
+    </div>
 
-                <!-- System Stats -->
-                <div class="stats-bar">
-                    <div class="stat-item">
-                        <div class="stat-header">
-                            <i class="fas fa-microchip"></i>
-                            <span>RAM</span>
-                        </div>
-                        <div class="stat-value" id="ramValue">--</div>
+    <div class="dashboard-container">
+        <!-- Statistik-Karten -->
+        <div class="card-xl">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-microchip"></i>
                     </div>
-                    
-                    <div class="stat-item">
-                        <div class="stat-header">
-                            <i class="fas fa-hdd"></i>
-                            <span>Flash</span>
+                    <div class="stat-info">
+                        <div class="stat-title">RAM-Auslastung</div>
+                        <div class="stat-value" id="ramValue">32%</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-down"></i> 3% weniger als gestern
                         </div>
-                        <div class="stat-value" id="flashValue">--</div>
                     </div>
-                    
-                    <div class="stat-item">
-                        <div class="stat-header">
-                            <i class="fas fa-clock"></i>
-                            <span>Uptime</span>
-                        </div>
-                        <div class="stat-value" id="uptimeValue">--</div>
+                    <div class="stat-sparkline"></div>
+                </div>
+
+                <div class="stat-card success">
+                    <div class="stat-icon">
+                        <i class="fas fa-hdd"></i>
                     </div>
-                    
-                    <div class="stat-item">
-                        <div class="stat-header">
-                            <i class="fas fa-wifi"></i>
-                            <span>Signal</span>
+                    <div class="stat-info">
+                        <div class="stat-title">Flash-Speicher</div>
+                        <div class="stat-value" id="flashValue">45%</div>
+                        <div class="stat-change">
+                            <i class="fas fa-equals"></i> Stabil
                         </div>
-                        <div class="stat-value" id="wifiValue">--</div>
                     </div>
-                    
-                    <div class="stat-item">
-                        <div class="stat-header">
-                            <i class="fas fa-cube"></i>
-                            <span>App</span>
+                    <div class="stat-sparkline"></div>
+                </div>
+
+                <div class="stat-card info">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-title">Betriebszeit</div>
+                        <div class="stat-value" id="uptimeValue">13d 7h</div>
+                    </div>
+                    <div class="stat-sparkline"></div>
+                </div>
+
+                <div class="stat-card warning">
+                    <div class="stat-icon">
+                        <i class="fas fa-wifi"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-title">WLAN-Signal</div>
+                        <div class="stat-value" id="wifiValue">82%</div>
+                        <div class="stat-change negative">
+                            <i class="fas fa-arrow-down"></i> 5% schwächer
                         </div>
-                        <div class="stat-value" id="currentApp">--</div>
+                    </div>
+                    <div class="stat-sparkline"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Matrix Display -->
+        <div class="card-xl">
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">Matrix Display</h2>
+                    <p class="card-subtitle">Aktuelle Anzeige: <span id="currentApp">Uhrzeit</span></p>
+                </div>
+                <button class="card-action" id="fullscreen">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+            
+            <div class="matrix-display">
+                <div class="matrix-dots">
+                    <!-- Wird dynamisch mit JS gefüllt -->
+                </div>
+            </div>
+            
+            <div class="matrix-controls">
+                <button class="matrix-btn" id="previousapp">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                
+                <button class="matrix-btn primary" id="downloadpng">
+                    <i class="fas fa-download"></i>
+                </button>
+                
+                <button class="matrix-btn primary" id="startgif">
+                    <i class="fas fa-record-vinyl"></i>
+                </button>
+                
+                <button class="matrix-btn" id="nextapp">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Systeminformationen -->
+        <div class="card-md">
+            <div class="card-header">
+                <h2 class="card-title">Systeminformationen</h2>
+            </div>
+            <div class="dashboard-info">
+                <ul class="info-list">
+                    <li>
+                        <span class="info-label">Firmware Version</span>
+                        <span class="info-value">3.0.2</span>
+                    </li>
+                    <li>
+                        <span class="info-label">Hostname</span>
+                        <span class="info-value">AWTRIX-ABC123</span>
+                    </li>
+                    <li>
+                        <span class="info-label">IP-Adresse</span>
+                        <span class="info-value">192.168.1.42</span>
+                    </li>
+                    <li>
+                        <span class="info-label">MAC-Adresse</span>
+                        <span class="info-value">AB:CD:EF:12:34:56</span>
+                    </li>
+                    <li>
+                        <span class="info-label">WLAN SSID</span>
+                        <span class="info-value">MeinWLAN</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Letzte Aktivitäten -->
+        <div class="card-md">
+            <div class="card-header">
+                <h2 class="card-title">Letzte Aktivitäten</h2>
+            </div>
+            <div class="activity-list">
+                <div class="activity-item">
+                    <div class="activity-icon success">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">MQTT verbunden</div>
+                        <div class="activity-time">Vor 5 Minuten</div>
                     </div>
                 </div>
-                <div class="content-wrapper">
-                    <!-- Matrix Display -->
-                    <div class="matrix-display">
-                        <div class="matrix-container" id="container-live">
-                            <canvas id="c"></canvas>
-                            <div class="display-controls">
-                                <button class="nav-btn" id="fullscreen">
-                                    <i class="fas fa-expand"></i>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="matrix-controls">
-                            <button class="nav-btn" id="previousapp">
-                                <i class="fas fa-chevron-left"></i>
-                            </button>
-                            
-                            <div class="center-controls">
-                                <button class="action-btn" id="downloadpng">
-                                    <i class="fas fa-download"></i>
-                                    <span>Save PNG</span>
-                                </button>
-                                <button class="action-btn" id="startgif">
-                                    <i class="fas fa-record-vinyl"></i>
-                                    <span>Record GIF</span>
-                                    <span class="record-time" id="recordTime"></span>
-                                </button>
-                            </div>                    
-                            <button class="nav-btn" id="nextapp">
-                                <i class="fas fa-chevron-right"></i>
-                            </button>
-                        </div>
+                <div class="activity-item">
+                    <div class="activity-icon info">
+                        <i class="fas fa-sync"></i>
                     </div>
+                    <div class="activity-content">
+                        <div class="activity-title">Firmware aktualisiert</div>
+                        <div class="activity-time">Vor 3 Stunden</div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon warning">
+                        <i class="fas fa-exclamation"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">Signal schwach</div>
+                        <div class="activity-time">Vor 4 Stunden</div>
+                    </div>
+                </div>
             </div>
-        </section>
+        </div>
     </div>
 </div>
 
