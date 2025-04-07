@@ -3,134 +3,14 @@ import { getBaseUrl, proxyFetch, BASE_URL } from './utils.js';
 // Check if we're in an iframe
 const isIframe = window !== window.parent;
 
-// Toast Manager
-const toastManager = {
-    show: function(message, type = 'info', duration = 3000) {
-        const toastContainer = document.getElementById('toast-container');
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        
-        let iconClass = 'fa-info-circle';
-        if (type === 'success') iconClass = 'fa-check-circle';
-        if (type === 'error') iconClass = 'fa-exclamation-circle';
-        
-        toast.innerHTML = `
-            <i class="fas ${iconClass}"></i>
-            <span>${message}</span>
-        `;
-        
-        toastContainer.appendChild(toast);
-        
-        // Animation
-        setTimeout(() => {
-            toast.style.animation = 'fadeOut 0.5s ease forwards';
-            setTimeout(() => {
-                toast.remove();
-            }, 500);
-        }, duration);
-    }
-};
-
-// Settings Manager
-const settingsManager = {
-    pendingChanges: new Map(),
-    
-    addPendingChange: function(key, value) {
-        this.pendingChanges.set(key, value);
-        document.querySelector('.settings-actions').classList.add('has-changes');
-    },
-    
-    clearPendingChanges: function() {
-        this.pendingChanges.clear();
-        document.querySelector('.settings-actions').classList.remove('has-changes');
-    },
-    
-    hasPendingChanges: function() {
-        return this.pendingChanges.size > 0;
-    },
-    
-    saveAllChanges: async function() {
-        if (!this.hasPendingChanges()) return;
-        
-        const settingsData = Object.fromEntries(this.pendingChanges);
-        try {
-            showLoading(true);
-            const response = await proxyFetch(`${BASE_URL}/api/system`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(settingsData)
-            });
-            
-            if (response && response.success === true) {
-                toastManager.show('Einstellungen wurden gespeichert', 'success');
-                this.clearPendingChanges();
-            } else {
-                toastManager.show('Fehler beim Speichern der Einstellungen', 'error');
-            }
-        } catch (error) {
-            console.error('Error saving settings:', error);
-            toastManager.show('Fehler beim Speichern der Einstellungen', 'error');
-        } finally {
-            showLoading(false);
-        }
-    },
-    
-    discardChanges: function() {
-        this.clearPendingChanges();
-        loadSettings(); // Reload settings from server
-        toastManager.show('Änderungen wurden verworfen', 'info');
-    }
-};
-
 // Initialize settings listeners
 function initializeSettings() {
-    // Add collapse/expand functionality to sections
-    document.querySelectorAll('.settings-section h2').forEach(header => {
-        header.innerHTML = `
-            <span>${header.textContent}</span>
-            <button class="section-toggle">
-                <i class="fas fa-chevron-down"></i>
-            </button>
-        `;
-        
-        header.addEventListener('click', () => {
-            const section = header.parentElement;
-            section.classList.toggle('collapsed');
-            const icon = header.querySelector('i');
-            icon.classList.toggle('fa-chevron-down');
-            icon.classList.toggle('fa-chevron-right');
-        });
-    });
-    
-    // Initialize Action Buttons
-    document.querySelector('.settings-actions .btn-secondary').addEventListener('click', () => {
-        if (settingsManager.hasPendingChanges()) {
-            if (confirm('Möchten Sie wirklich alle Änderungen verwerfen?')) {
-                settingsManager.discardChanges();
-            }
-        } else {
-            toastManager.show('Keine Änderungen zum Zurücksetzen vorhanden', 'info');
-        }
-    });
-    
-    document.querySelector('.settings-actions .btn').addEventListener('click', async () => {
-        if (settingsManager.hasPendingChanges()) {
-            await settingsManager.saveAllChanges();
-        } else {
-            toastManager.show('Keine Änderungen zum Speichern vorhanden', 'info');
-        }
-    });
-
     loadSettings(); // Load settings when initializing
 
     // Handle input changes for text and number inputs
     document.querySelectorAll('.settings-section input[type="text"], .settings-section input[type="number"]')
         .forEach(input => {
             input.addEventListener('change', handleSettingChange);
-            // Add validation feedback
-            input.addEventListener('input', validateInput);
         });
 
     // Handle checkbox changes
@@ -152,7 +32,7 @@ function initializeSettings() {
             const [r, g, b] = Array.from(colorInputs).map(input => parseInt(input.value));
             // Convert RGB to uint32_t
             const colorValue = (r << 16) | (g << 8) | b;
-            addPendingChange('C_CORRECTION', colorValue);
+            updateSetting('C_CORRECTION', colorValue);
         });
     });
 
@@ -162,7 +42,7 @@ function initializeSettings() {
         input.addEventListener('change', () => {
             const [r, g, b] = Array.from(tempInputs).map(input => parseInt(input.value));
             const colorValue = (r << 16) | (g << 8) | b;
-            addPendingChange('C_TEMPERATURE', colorValue);
+            updateSetting('C_TEMPERATURE', colorValue);
         });
     });
 
@@ -175,7 +55,7 @@ function initializeSettings() {
         toggle?.addEventListener('change', (e) => {
             input.disabled = !e.target.checked;
             if (!e.target.checked) {
-                addPendingChange(input.id, 0); // Disable color (value 0)
+                updateSetting(input.id, 0); // Disable color (value 0)
             } else {
                 // Send current color value when enabled
                 const hex = input.value;
@@ -183,7 +63,7 @@ function initializeSettings() {
                 const g = parseInt(hex.substr(3, 2), 16);
                 const b = parseInt(hex.substr(5, 2), 16);
                 const colorValue = (r << 16) | (g << 8) | b;
-                addPendingChange(input.id, colorValue);
+                updateSetting(input.id, colorValue);
             }
         });
 
@@ -195,7 +75,7 @@ function initializeSettings() {
                 const g = parseInt(hex.substr(3, 2), 16);
                 const b = parseInt(hex.substr(5, 2), 16);
                 const colorValue = (r << 16) | (g << 8) | b;
-                addPendingChange(e.target.id, colorValue);
+                updateSetting(e.target.id, colorValue);
             }
         });
     });
@@ -209,103 +89,6 @@ function initializeSettings() {
             input.disabled = !e.target.checked;
         });
     });
-    
-    // Add search functionality
-    const searchInput = document.createElement('input');
-    searchInput.type = 'text';
-    searchInput.placeholder = 'Einstellungen durchsuchen...';
-    searchInput.className = 'settings-search form-control';
-    document.querySelector('#settings .header').appendChild(searchInput);
-    
-    searchInput.addEventListener('input', (e) => {
-        const searchTerm = e.target.value.toLowerCase();
-        
-        if (searchTerm.length < 2) {
-            // If search term is too short, show all sections
-            document.querySelectorAll('.settings-section').forEach(section => {
-                section.style.display = 'block';
-                section.classList.remove('search-highlight');
-                
-                // Show all settings items
-                section.querySelectorAll('.setting-item').forEach(item => {
-                    item.style.display = 'flex';
-                    item.classList.remove('search-match');
-                });
-            });
-            return;
-        }
-        
-        // Search through all settings
-        document.querySelectorAll('.settings-section').forEach(section => {
-            const sectionTitle = section.querySelector('h2').textContent.toLowerCase();
-            const hasMatch = sectionTitle.includes(searchTerm);
-            
-            // Search in setting items
-            let matchFound = false;
-            section.querySelectorAll('.setting-item').forEach(item => {
-                const label = item.querySelector('label')?.textContent.toLowerCase() || '';
-                const desc = item.querySelector('.setting-desc')?.textContent.toLowerCase() || '';
-                
-                const itemMatch = label.includes(searchTerm) || desc.includes(searchTerm);
-                
-                if (itemMatch) {
-                    matchFound = true;
-                    item.style.display = 'flex';
-                    item.classList.add('search-match');
-                } else {
-                    item.style.display = hasMatch ? 'flex' : 'none';
-                    item.classList.remove('search-match');
-                }
-            });
-            
-            // Show/hide section based on matches
-            section.style.display = (hasMatch || matchFound) ? 'block' : 'none';
-            section.classList.toggle('search-highlight', hasMatch);
-            
-            // Expand sections with matches
-            if (hasMatch || matchFound) {
-                section.classList.remove('collapsed');
-                const icon = section.querySelector('.section-toggle i');
-                if (icon) {
-                    icon.classList.add('fa-chevron-down');
-                    icon.classList.remove('fa-chevron-right');
-                }
-            }
-        });
-    });
-}
-
-// Validate inputs
-function validateInput(event) {
-    const input = event.target;
-    const wrapper = input.closest('.setting-item');
-    
-    if (input.type === 'number') {
-        const value = parseFloat(input.value);
-        const min = parseFloat(input.min);
-        const max = parseFloat(input.max);
-        
-        if (input.value === '') {
-            wrapper.classList.remove('valid', 'invalid');
-        } else if ((min !== NaN && value < min) || (max !== NaN && value > max)) {
-            wrapper.classList.add('invalid');
-            wrapper.classList.remove('valid');
-        } else {
-            wrapper.classList.add('valid');
-            wrapper.classList.remove('invalid');
-        }
-    } else if (input.type === 'text' && input.pattern) {
-        const regex = new RegExp(input.pattern);
-        if (input.value === '') {
-            wrapper.classList.remove('valid', 'invalid');
-        } else if (regex.test(input.value)) {
-            wrapper.classList.add('valid');
-            wrapper.classList.remove('invalid');
-        } else {
-            wrapper.classList.add('invalid');
-            wrapper.classList.remove('valid');
-        }
-    }
 }
 
 // Show or hide loading indicator
@@ -318,16 +101,6 @@ function showLoading(show = true) {
     }
 }
 
-// Add a pending change to the queue
-function addPendingChange(key, value) {
-    settingsManager.addPendingChange(key, value);
-}
-
-// Show toast message
-function showToast(message, type = 'info') {
-    toastManager.show(message, type);
-}
-
 // Update loadSettings to handle security correctly
 async function loadSettings() {
     showLoading(true);
@@ -337,7 +110,7 @@ async function loadSettings() {
         populateSettings(settings);
     } catch (error) {
         console.error('Error loading settings:', error);
-        showToast('Fehler beim Laden der Einstellungen', 'error');
+        showToast('Error loading settings', 'error');
     } finally {
         showLoading(false);
     }
@@ -389,9 +162,6 @@ function populateSettings(settings) {
             input.disabled = !isStatic;
         });
     }
-    
-    // Clear any pending changes
-    settingsManager.clearPendingChanges();
 }
 
 // Handle setting changes
@@ -409,7 +179,7 @@ async function handleSettingChange(event) {
         value = input.value;
     }
 
-    addPendingChange(id, value);
+    await updateSetting(id, value);
 }
 
 // Update updateSetting to handle proxied responses correctly
@@ -431,28 +201,15 @@ async function updateSetting(key, value) {
 
         // Die Antwort wird wie im Dashboard behandelt
         if (response && response.success === true) {
-            showToast('Einstellung gespeichert', 'success');
-            return true;
+            showToast('Setting saved', 'success');
         } else {
-            showToast('Fehler beim Speichern der Einstellung', 'error');
-            return false;
+            showToast('Error saving setting', 'error');
         }
 
     } catch (error) {
         console.error('Error updating setting:', error);
-        showToast('Fehler beim Speichern der Einstellung', 'error');
-        return false;
+        showToast('Error saving setting', 'error');
     }
 }
 
-// Check for unsaved changes before leaving page
-window.addEventListener('beforeunload', (e) => {
-    if (settingsManager.hasPendingChanges()) {
-        const confirmationMessage = 'Es gibt ungespeicherte Änderungen. Möchten Sie die Seite wirklich verlassen?';
-        e.returnValue = confirmationMessage;
-        return confirmationMessage;
-    }
-});
-
 initializeSettings();
-
