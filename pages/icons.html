@@ -1,90 +1,74 @@
 <script type="module" src="js/icons.js"></script>
 <div id="icons" class="page">
-    <header class="header">
-        <h1>Icon Galerie</h1>
-    </header>
-
-    <div class="icon-actions-bar">
-        <!-- Linke Seite: Toolbar für Aktionen -->
-        <div class="icon-toolbar">
-            <button class="toolbar-btn rename-btn" disabled>
-                <i class="fa-solid fa-pen-to-square"></i>
-                Umbenennen
-            </button>
-            <button class="toolbar-btn delete-btn" disabled>
-                <i class="fa-solid fa-trash"></i>
-                Löschen
-            </button>
-        </div>
-        <!-- Rechte Seite: Add Icon Buttons -->
-        <div class="add-icons">
-            <label for="icon-upload" class="btn btn-icon">
-                <i class="fa-solid fa-upload"></i>
-                Upload
-            </label>
-            <button class="btn btn-icon" id="show-lametric">
-                <i class="fa-solid fa-download"></i>
-                LaMetric
-            </button>
-        </div>
+    <div class="header">
+        <h1>Icon Management</h1>
     </div>
-
-    <!-- Icon Grid -->
+    
     <div class="content-card">
-        <div id="esp-icon-grid" class="icon-grid">
-            <!-- Dynamically loaded icons will appear here -->
-        </div>
-    </div>
-
-    <!-- Upload Modal -->
-    <div id="upload-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Icon hochladen</h3>
-                <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+        <div class="icon-header">
+            <div class="icon-title">
+                <h3>Meine Icons</h3>
+                <span class="icon-count">(<span id="icon-count">0</span> Icons)</span>
             </div>
-            <div class="modal-body">
-                <div class="upload-area">
-                    <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
-                    <p>GIF oder JPG (8x8 oder 32x8)</p>
-                    <input type="file" id="icon-upload" accept=".gif,.jpg,.jpeg" hidden>
-                    <label for="icon-upload" class="btn">
-                        <i class="fa-solid fa-plus"></i>
-                        Icons auswählen
-                    </label>
-                </div>
+
+            <div class="search-box">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" id="icon-search" placeholder="Suche nach Icon-Namen...">
             </div>
         </div>
+        
+        <div class="icon-toolbar">
+            <div>
+                <button class="toolbar-btn" id="selectAll">
+                    <i class="fa-solid fa-check-square"></i>
+                    Alle auswählen
+                </button>
+                <button class="toolbar-btn" id="deselectAll">
+                    <i class="fa-solid fa-square"></i>
+                    Keine auswählen
+                </button>
+            </div>
+            <div>
+                <button class="toolbar-btn" id="deleteSelected" disabled>
+                    <i class="fa-solid fa-trash"></i>
+                    Löschen
+                </button>
+            </div>
+        </div>
+        
+        <div class="icon-grid" id="icon-grid">
+            <!-- Icons werden dynamisch hier hinzugefügt -->
+        </div>
     </div>
-
-    <!-- LaMetric Modal -->
-    <div id="lametric-modal" class="modal">
+    
+    <div class="content-card">
+        <h3>Icon hochladen</h3>
+        <div class="upload-area" id="upload-area">
+            <i class="fa-solid fa-upload upload-icon"></i>
+            <h3>Icons hochladen</h3>
+            <p>PNG oder GIF Dateien mit maximal 16x16 Pixeln</p>
+        </div>
+        <input type="file" id="file-upload" accept=".png,.gif" multiple style="display: none;">
+    </div>
+    
+    <div id="iconModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>LaMetric Icon importieren</h3>
-                <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+                <h3>Icon bearbeiten</h3>
+                <button class="close-modal" id="closeModal">
+                    <i class="fa-solid fa-times"></i>
+                </button>
             </div>
             <div class="modal-body">
-                <div class="import-form">
-                    <div class="input-group">
-                        <input type="text" 
-                               id="lametric-iconID" 
-                               class="form-control" 
-                               placeholder="Icon ID"
-                               maxlength="6">
-                        <button class="btn" id="preview-lametric">
-                            <i class="fa-solid fa-search"></i>
-                            Vorschau
-                        </button>
-                    </div>
-                    <div class="preview-area">
-                        <div id="icon-container" class="icon-preview"></div>
-                    </div>
-                    <button class="btn btn-full" id="import-lametric" disabled>
-                        <i class="fa-solid fa-download"></i>
-                        Importieren
-                    </button>
+                <div class="preview-area">
+                    <img id="editPreview" src="" alt="Icon Preview">
                 </div>
+                <div class="form-group">
+                    <label for="iconName">Name</label>
+                    <input type="text" id="iconName" class="form-control" placeholder="Icon Name">
+                    <input type="hidden" id="iconId">
+                </div>
+                <button class="btn" id="saveIcon">Speichern</button>
             </div>
         </div>
     </div>

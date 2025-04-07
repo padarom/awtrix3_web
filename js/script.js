@@ -1,130 +1,64 @@
-// App Initialisierung
-document.addEventListener('DOMContentLoaded', () => {
-    // Loader
-    const appLoader = document.querySelector('.app-loader');
-    setTimeout(() => {
-        appLoader.classList.add('hidden');
-    }, 1200);
+// Sidebar und Menü-Toggle
+const menuToggle = document.getElementById("menu-toggle");
+const sidebar = document.querySelector(".sidebar");
+const overlay = document.getElementById('overlay');
+const content = document.getElementById('content');
+const navItems = document.querySelectorAll('.nav-item');
+const navGroups = document.querySelectorAll('.nav-group');
 
-    // Toast System
-    window.showToast = (message, type = 'info', title = null, duration = 3000) => {
-        const toastContainer = document.getElementById('toast-container');
-        const toast = document.createElement('div');
-        toast.classList.add('toast', type);
+// Sidebar-Interaktionen
+menuToggle?.addEventListener('click', () => {
+    sidebar?.classList.toggle('hidden');
+    overlay.classList.toggle('active');
+    document.body.classList.toggle('menu-open');
+});
 
-        let icon = '';
-        switch(type) {
-            case 'success':
-                icon = 'fa-circle-check';
-                title = title || 'Erfolg';
-                break;
-            case 'error':
-                icon = 'fa-circle-exclamation';
-                title = title || 'Fehler';
-                break;
-            case 'warning':
-                icon = 'fa-triangle-exclamation';
-                title = title || 'Warnung';
-                break;
-            default:
-                icon = 'fa-circle-info';
-                title = title || 'Information';
-        }
+overlay.addEventListener('click', () => {
+    sidebar?.classList.remove('hidden');
+    overlay.classList.remove('active');
+    document.body.classList.remove('menu-open');
+});
 
-        toast.innerHTML = `
-            <div class="toast-icon">
-                <i class="fa-solid ${icon}"></i>
-            </div>
-            <div class="toast-content">
-                <div class="toast-title">${title}</div>
-                <div class="toast-message">${message}</div>
-            </div>
-            <button class="toast-close">
-                <i class="fa-solid fa-times"></i>
-            </button>
-        `;
-
-        toastContainer.appendChild(toast);
-
-        const closeBtn = toast.querySelector('.toast-close');
-        closeBtn.addEventListener('click', () => {
-            toast.remove();
-        });
-
-        setTimeout(() => {
-            toast.style.animation = 'fadeOut 0.3s forwards';
-            setTimeout(() => toast.remove(), 300);
-        }, duration);
-    };
-
-    // Sidebar und Menü-Toggle
-    const menuToggle = document.getElementById("menu-toggle");
-    const sidebar = document.querySelector(".sidebar");
-    const overlay = document.getElementById("overlay");
-
-    // Sidebar-Interaktionen
-    menuToggle?.addEventListener('click', () => {
-        sidebar?.classList.toggle('hidden');
-        overlay.classList.toggle('active');
-    });
-
-    overlay.addEventListener('click', () => {
-        sidebar?.classList.add('hidden');
-        overlay.classList.remove('active');
-    });
-
-    // Navigation und Seitenwechsel
-    document.querySelectorAll('.nav-item').forEach(nav => {
-        if(!nav.classList.contains('nav-item-parent')) {
-            nav.addEventListener('click', async (e) => {
-                e.preventDefault();
-                document.querySelectorAll('.nav-item').forEach(item => {
-                    if(!item.classList.contains('nav-item-parent')) {
-                        item.classList.remove('active');
-                    }
-                });
-                nav.classList.add('active');
-
-                const page = nav.getAttribute('data-page');
-                if(page) {
-                    await loadPage(page);
-                    sidebar?.classList.add('hidden');
-                    overlay.classList.remove('active');
-                }
-            });
-        }
-    });
-
-    // Add handler for nav groups
-    document.querySelectorAll('.nav-item-parent').forEach(item => {
-        item.addEventListener('click', () => {
-            const group = item.closest('.nav-group');
-            group.classList.toggle('open');
-        });
-    });
-
-    // Dynamische Seiten laden
-    async function loadPage(pageId) {
-        try {
-            showToast(`Lade Seite: ${pageId}`, 'info');
+// Navigation und Seitenwechsel
+navItems.forEach(item => {
+    // Skip parent items in nav groups
+    if (item.classList.contains('nav-item-parent')) return;
+    
+    item.addEventListener('click', () => {
+        // If this is a page link
+        const pageId = item.getAttribute('data-page');
+        if (pageId) {
+            loadPage(pageId);
             
-            // Content Container vorbereiten
-            const content = document.getElementById('content');
-            if (!content) {
-                console.error('Content-Container (#content) nicht gefunden.');
-                return;
+            // Set active state
+            navItems.forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+            
+            // Close mobile menu
+            if (window.innerWidth <= 768) {
+                sidebar.classList.remove('hidden');
+                overlay.classList.remove('active');
+                document.body.classList.remove('menu-open');
             }
+        }
+    });
+});
 
-            // Loading Effekt
-            content.innerHTML = `
-                <div class="loading-content">
-                    <div class="loading-spinner"></div>
-                    <p>Lade Inhalt...</p>
-                </div>
-            `;
+// Add handler for nav groups
+navGroups.forEach(group => {
+    const parentItem = group.querySelector('.nav-item-parent');
+    parentItem.addEventListener('click', () => {
+        group.classList.toggle('open');
+    });
+});
 
-            // Special handling for creator page
-            if (pageId === 'creator') {
+// Dynamische Seiten laden
+async function loadPage(pageId) {
+    try {
+        // Special handling for creator page
+        if (pageId === 'creator') {
+            const content = document.getElementById('content');
+            if (content) {
                 content.innerHTML = `
                     <iframe 
                         src="piskel/index.html" 
@@ -133,146 +67,124 @@ document.addEventListener('DOMContentLoaded', () => {
                     </iframe>`;
                 return;
             }
-
-            // Normal page loading for all other pages
-            try {
-                const response = await fetch(`pages/${pageId}.html`);
-                if (!response.ok) {
-                    throw new Error(`Fehler beim Laden der Seite: ${pageId}`);
-                }
-                const html = await response.text();
-                content.innerHTML = html;
-
-                // Dynamisches Skript laden
-                const script = document.createElement('script');
-                script.src = `js/${pageId}.js`;
-                script.type = 'module';
-
-                // Alte Skripte entfernen
-                const oldScript = document.querySelector(`script[src="js/${pageId}.js"]`);
-                if (oldScript) {
-                    oldScript.remove();
-                }
-
-                // Event erst dispatchen, wenn das Skript geladen ist
-                script.onload = () => {
-                    document.dispatchEvent(new CustomEvent('awtrixPageChange', {
-                        detail: { pageId }
-                    }));
-                    showToast(`Seite '${pageId}' erfolgreich geladen`, 'success');
-                };
-
-                script.onerror = () => {
-                    console.warn(`Kein Skript für '${pageId}' gefunden`);
-                    // Dispatch event even if script not found
-                    document.dispatchEvent(new CustomEvent('awtrixPageChange', {
-                        detail: { pageId }
-                    }));
-                };
-
-                document.body.appendChild(script);
-            } catch (error) {
-                content.innerHTML = `
-                    <div class="error-content">
-                        <div class="error-icon">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
-                        <h2>Seite konnte nicht geladen werden</h2>
-                        <p>${error.message}</p>
-                        <button class="btn btn-primary" onclick="loadPage('dashboard')">
-                            Zurück zum Dashboard
-                        </button>
-                    </div>
-                `;
-                showToast(`Fehler beim Laden der Seite: ${error.message}`, 'error');
-            }
-        } catch (error) {
-            console.error('Fehler beim Laden der Seite:', error);
-            showToast(`Ein unerwarteter Fehler ist aufgetreten: ${error.message}`, 'error');
         }
-    }
 
-    // Überprüfe Online-Status und aktualisiere Status-Indikator
-    function updateOnlineStatus() {
-        const statusIndicator = document.querySelector('.status-indicator');
-        const statusText = document.querySelector('.online-status span:last-child');
-        
-        if (navigator.onLine) {
-            statusIndicator.classList.remove('offline');
-            statusIndicator.classList.add('online');
-            statusText.textContent = 'Online';
+        // Normal page loading for all other pages
+        const response = await fetch(`pages/${pageId}.html`);
+        if (!response.ok) throw new Error(`Fehler beim Laden der Seite: ${pageId}`);
+        const html = await response.text();
+
+        const content = document.getElementById('content');
+        if (content) {
+            content.innerHTML = html;
+            // Dynamisches Skript laden
+            const script = document.createElement('script');
+            script.src = `js/${pageId}.js`;
+            script.type = 'module';
+            // Event erst dispatchen, wenn das Skript geladen ist
+            script.onload = () => {
+                document.dispatchEvent(new CustomEvent('awtrixPageChange', {
+                    detail: { pageId }
+                }));
+            };
+            document.body.appendChild(script);
         } else {
-            statusIndicator.classList.remove('online');
-            statusIndicator.classList.add('offline');
-            statusText.textContent = 'Offline';
+            console.error('Content-Container (#content) nicht gefunden.');
         }
+
+        // Update page title and history state
+        updatePageTitleAndState(pageId);
+    } catch (error) {
+        console.error('Fehler beim Laden der Seite:', error);
+        content.innerHTML = `<div class="error-message">Fehler beim Laden der Seite: ${error.message}</div>`;
     }
-
-    // Event-Listener für Online-Status
-    window.addEventListener('online', updateOnlineStatus);
-    window.addEventListener('offline', updateOnlineStatus);
-    updateOnlineStatus();
-
-    // Standardseite beim Start laden
-    (async () => {
-        const defaultPage = 'dashboard'; // Setze hier die Standardseite
-        await loadPage(defaultPage);
-        document.querySelector(`.nav-item[data-page="${defaultPage}"]`)?.classList.add('active');
-    })();
-
-    // Exportiere globale Funktionen
-    window.loadPage = loadPage;
-});
-
-// Utility Functions
-function debounce(func, wait = 300) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            timeout = null;
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
 }
 
-// Create matrix display animation effect for demo purposes
-function initMatrixDisplay() {
-    const matrixContainer = document.querySelector('.matrix-dots');
-    if (!matrixContainer) return;
-    
-    // Create matrix dots
-    const rows = 8;
-    const cols = 32;
-    for (let i = 0; i < rows * cols; i++) {
-        const dot = document.createElement('div');
-        dot.classList.add('matrix-dot');
-        matrixContainer.appendChild(dot);
+// Standardseite beim Start laden
+(async () => {
+    const defaultPage = 'dashboard'; // Setze hier die Standardseite
+    await loadPage(defaultPage);
+    document.querySelector(`.nav-item[data-page="${defaultPage}"]`)?.classList.add('active');
+})();
+
+// Update page title and history state
+function updatePageTitleAndState(pageId) {
+    let pageTitle = '';
+    switch (pageId) {
+        case 'dashboard':
+            pageTitle = 'Dashboard';
+            break;
+        case 'settings':
+            pageTitle = 'Einstellungen';
+            break;
+        case 'wifi':
+            pageTitle = 'WLAN';
+            break;
+        case 'mqtt':
+            pageTitle = 'MQTT';
+            break;
+        case 'network':
+            pageTitle = 'Netzwerk';
+            break;
+        case 'time':
+            pageTitle = 'Zeiteinstellungen';
+            break;
+        case 'icons':
+            pageTitle = 'Icons';
+            break;
+        case 'creator':
+            pageTitle = 'Icon Creator';
+            break;
+        default:
+            pageTitle = 'AWTRIX 3';
     }
-    
-    // Animate random dots
-    setInterval(() => {
-        const dots = document.querySelectorAll('.matrix-dot');
-        const randomDot = dots[Math.floor(Math.random() * dots.length)];
-        const randomColor = `hsl(${Math.floor(Math.random() * 360)}, 100%, 50%)`;
-        
-        randomDot.classList.add('active');
-        randomDot.style.backgroundColor = randomColor;
-        randomDot.style.boxShadow = `0 0 10px ${randomColor}`;
-        
-        setTimeout(() => {
-            randomDot.classList.remove('active');
-            randomDot.style.backgroundColor = '';
-            randomDot.style.boxShadow = '';
-        }, 1000);
-    }, 100);
+    document.title = `AWTRIX 3 | ${pageTitle}`;
+    history.pushState(null, pageTitle, `#${pageId}`);
 }
 
-// Call matrix display initialization when needed
-document.addEventListener('awtrixPageChange', (e) => {
-    if (e.detail.pageId === 'dashboard') {
-        setTimeout(initMatrixDisplay, 500);
-    }
+// Handle browser back/forward
+window.addEventListener('popstate', () => {
+    const pageId = window.location.hash.substring(1) || 'dashboard';
+    loadPage(pageId);
+    navItems.forEach(item => {
+        item.classList.remove('active');
+        if (item.getAttribute('data-page') === pageId) {
+            item.classList.add('active');
+        }
+    });
 });
+
+// Show toast notification
+window.showToast = function(message, type = 'info') {
+    const toastContainer = document.getElementById('toast-container') || createToastContainer();
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    
+    let icon = '';
+    switch (type) {
+        case 'success':
+            icon = '<i class="fa-solid fa-check-circle"></i>';
+            break;
+        case 'error':
+            icon = '<i class="fa-solid fa-times-circle"></i>';
+            break;
+        default:
+            icon = '<i class="fa-solid fa-info-circle"></i>';
+    }
+    
+    toast.innerHTML = `${icon} <span>${message}</span>`;
+    toastContainer.appendChild(toast);
+    
+    // Remove toast after it fades out
+    setTimeout(() => {
+        toast.remove();
+    }, 5000);
+}
+
+function createToastContainer() {
+    const container = document.createElement('div');
+    container.id = 'toast-container';
+    document.body.appendChild(container);
+    return container;
+}
 

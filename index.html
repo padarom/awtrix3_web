@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AWTRIX 3 - Steuerungszentrale</title>
+    <title>AWTRIX 3</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <!--link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Blueforcer/awtrix3_web_test/css/style.css"-->
@@ -11,43 +14,33 @@
     <link rel="stylesheet" href="css/style.css">
     <script src="js/script.js" defer></script>
     <!--script src="https://cdn.jsdelivr.net/gh/Blueforcer/awtrix3_web_test/js/script.js" defer></script-->
-    <link rel="icon" type="image/png" href="images/icon.png">
-    <meta name="theme-color" content="#5846f9">
+
 </head>
 <body>
-    <!-- Loader -->
-    <div class="app-loader">
-        <div class="loader-content">
-            <img src="images/icon.png" alt="AWTRIX 3" class="loader-logo">
-            <div class="loader-spinner"></div>
-        </div>
-    </div>
-
     <!-- Overlay für das Menü -->
     <div class="overlay" id="overlay"></div>
 
-    <!-- Menü-Button für Mobile -->
+    <!-- Menü-Button -->
     <button class="menu-toggle" id="menu-toggle">
         <i class="fa-solid fa-bars"></i>
     </button>
 
-    <!-- Sidebar -->
     <aside class="sidebar">
         <div class="logo">
-            <img src="images/icon.png" alt="Logo" class="logo-image">
+            <img src="https://cdn.jsdelivr.net/gh/Blueforcer/awtrix3_web_test/images/icon.png" alt="Logo" class="logo-image">
             <span>AWTRIX 3</span>
         </div>
         
-        <nav class="sidebar-nav">
+        <nav>
             <a class="nav-item" data-page="dashboard">
-                <i class="fa-solid fa-gauge-high"></i>
+                <i class="fa-solid fa-gauge"></i>
                 Dashboard
             </a>
             <div class="nav-group">
                 <a class="nav-item nav-item-parent">
                     <div class="nav-item-content">
                         <i class="fa-solid fa-network-wired"></i>
-                        <span>Netzwerk</span>
+                        <span>Network</span>
                     </div>
                     <i class="fa-solid fa-chevron-down nav-arrow"></i>
                 </a>
@@ -62,7 +55,7 @@
                     </a>
                     <a class="nav-item sub-item" data-page="network">
                         <i class="fa-solid fa-globe"></i>
-                        <span>Netzwerkeinstellungen</span>
+                        <span>Network Settings</span>
                     </a>
                 </div>
             </div>
@@ -81,7 +74,7 @@
                 <div class="nav-subitems">
                     <a class="nav-item sub-item" data-page="icons">
                         <i class="fa-regular fa-images"></i>
-                        <span>Meine Icons</span>
+                        <span>My Icons</span>
                     </a>
                     <a class="nav-item sub-item" data-page="creator">
                         <i class="fa-solid fa-paint-brush"></i>
@@ -95,24 +88,15 @@
             </a>
         </nav>
 
-        <div class="sidebar-footer">
-            <div class="version-info">
-                <span>Version</span>
-                <strong>1.0</strong>
-            </div>
-            <div class="online-status">
-                <span class="status-indicator online"></span>
-                <span>Online</span>
-            </div>
-        </div>
+        <footer class="sidebar-footer">
+            <div>Version</div>
+            <div>1.0</div>
+        </footer>
     </aside>
 
-    <!-- Toast Notifications -->
-    <div id="toast-container"></div>
-
-    <!-- Main Content Area -->
     <main id="content">
-        <!-- Content wird dynamisch geladen -->
+        
     </main>
 </body>
+
 </html>
