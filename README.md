@@ -1,6 +1,14 @@
-# Nuxt Minimal Starter
+# Awtrix 3 Web
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+## Development
+#### With Nix
+If you're using [Nix](https://nixos.org), we provide a development shell that sets up everything you need
+to start working on the web interface. This includes `node` and` bun`, so you don't need to install any
+dependencies or worry about polluting your system environment. Run `nix develop` in order to enter the
+development shell.
+
+Alternatively, if you have `direnv` installed, run `direnv allow` once, which will automatically bring you
+into a development shell every time you enter the project directory.
 
 ## Setup
 

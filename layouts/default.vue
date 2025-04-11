@@ -1,5 +1,5 @@
 <template>
-  <Sidebar fixed w="72" inset-y-0 />
+  <ApplicationSidebar fixed w="72" inset-y-0 />
   <main p="l-72">
     <div p="8">
       <div class="overflow-hidden rounded-lg bg-white shadow">

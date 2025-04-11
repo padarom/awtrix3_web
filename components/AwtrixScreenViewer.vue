@@ -10,7 +10,7 @@ import type { Reactive } from 'vue'
 const REFRESH_RATE = 5
 
 let pollingInterval: number
-let pixels: Reactive<number[]> = reactive([] as number[])
+const pixels: Reactive<number[]> = reactive([] as number[])
 
 const fetchScreenPixels = async () => {
   pixels.push(1)

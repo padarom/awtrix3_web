@@ -1,5 +1,5 @@
 <template>
   <div>
-    <Screen />
+    <AwtrixScreenViewer />
   </div>
 </template>
