@@ -28,7 +28,7 @@ const fetchScreenPixels = async () => {
 
   // Converts integer colors for each pixel into an array of three individual
   // colors R, G & B. These can then be drawn in a separate step
-  const pixels = response.map((color) => {
+  const pixels: RGB[] = (response as number[]).map((color) => {
     const r = (color & 0xff0000) >> 16
     const g = (color & 0x00ff00) >> 8
     const b = (color & 0x0000ff)
@@ -40,15 +40,15 @@ const fetchScreenPixels = async () => {
 }
 
 const drawScreen = (pixels: RGB[]) => {
-  ctx.fillStyle = 'black'
-  ctx.fillRect(0, 0, canvas.value.width, canvas.value.height)
+  ctx!.fillStyle = 'black'
+  ctx!.fillRect(0, 0, canvas.value!.width, canvas.value!.height)
 
   pixels.forEach((pixel, index) => {
     const x = index % 32
     const y = Math.floor(index / 32)
 
-    ctx.fillStyle = `rgb(${pixel.join(',')})`
-    ctx?.fillRect(
+    ctx!.fillStyle = `rgb(${pixel.join(',')})`
+    ctx!.fillRect(
       x * (BLOCK_SIZE + GAP) + PADDING,
       y * (BLOCK_SIZE + GAP) + PADDING,
       BLOCK_SIZE,
@@ -58,15 +58,14 @@ const drawScreen = (pixels: RGB[]) => {
 }
 
 onMounted(() => {
-  ctx = canvas.value.getContext('2d')
-  ctx.imageSmoothingEnabled = true
+  ctx = canvas.value!.getContext('2d')
+  ctx!.imageSmoothingEnabled = true
 
   // TODO: In case the API takes too long to respond we need to skip some requests?
   pollingInterval = window.setInterval(() => fetchScreenPixels(), 1000 / REFRESH_RATE)
 })
 
 onUnmounted(() => {
-  console.log('unmounted')
   window.clearInterval(pollingInterval)
 })
 </script>

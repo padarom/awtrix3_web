@@ -1,8 +1,17 @@
 import { NoCommunicationPossibleError } from './index'
 import apiCommunicationMethod, { CommunicationMethod } from './apiCommunicationMethod'
 
+// Define these to have properly typed generic API response types
+type JSON =
+  | string
+  | number
+  | boolean
+  | null
+  | JSON[]
+  | {[key: string]: JSON}
+
 interface AwtrixApi {
-  get (endpoint: string, data?: object): Promise<object>
+  get (endpoint: string, data?: object): Promise<JSON>
   post (endpoint: string, data?: object): Promise<boolean>
 }
 
@@ -11,14 +20,14 @@ class HttpApi implements AwtrixApi {
     return 'http://10.2.0.32/api'
   }
 
-  async get (endpoint: string, data = {}): Promise<object> {
+  async get (endpoint: string, data = {}): Promise<JSON> {
     const searchParams = new URLSearchParams(data).toString()
 
     const response = await fetch(`${this.baseUrl}/${endpoint}?${searchParams}`)
     return response.json()
   }
 
-  async post (endpoint, data): Promise<boolean> {
+  async post (endpoint: string, data = {}): Promise<boolean> {
     const response = await fetch(`${this.baseUrl}/${endpoint}`, {
       method: 'POST',
       body: JSON.stringify(data),
@@ -29,15 +38,37 @@ class HttpApi implements AwtrixApi {
 }
 
 class PostMessageApi implements AwtrixApi {
-  protected proxy (method: 'GET' | 'POST', endpoint: string, data = {}): Promise<object> {
-    return data
+  protected proxy (method: 'GET' | 'POST', endpoint: string, data = {}): Promise<JSON> {
+    const messageID = Date.now().toString()
+
+    return new Promise((resolve, reject) => {
+      const handler = (event) => {
+        if (event.data.id !== messageID) { return }
+        window.removeEventListener('message', handler)
+
+        if (event.data.success) {
+          resolve(event.data.data)
+        } else {
+          reject(new Error(event.data.error))
+        }
+      }
+
+      window.addEventListener('message', handler)
+      window.parent.postMessage({
+        id: messageID,
+        url: `/api/${endpoint}`,
+        method,
+        body: method == 'POST' ? data : null,
+        // isImage: ...
+      }, '*')
+    })
   }
 
-  async get (endpoint: string, data = {}): Promise<object> {
+  async get (endpoint: string, data = {}): Promise<JSON> {
     return this.proxy('GET', endpoint, data)
   }
 
-  async post (endpoint, data): Promise<boolean> {
+  async post (endpoint: string, data = {}): Promise<boolean> {
     await this.proxy('POST', endpoint, data)
 
     // TODO: Determine success/failure

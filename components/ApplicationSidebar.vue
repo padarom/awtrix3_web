@@ -16,7 +16,6 @@
               >
                 <component :is="item.icon" class="size-6 shrink-0" aria-hidden="true" />
                 {{ item.name }}
-                <span v-if="item.count" class="ml-auto w-9 min-w-max whitespace-nowrap rounded-full bg-gray-900 px-2.5 py-0.5 text-center text-xs/5 font-medium text-white ring-1 ring-inset ring-gray-700" aria-hidden="true">{{ item.count }}</span>
               </NuxtLink>
             </li>
           </ul>
@@ -47,15 +46,16 @@ import {
 } from '@heroicons/vue/24/outline'
 
 const navigation = [
-  { name: 'Dashboard', href: '/', icon: HomeIcon, count: '5' },
-  { name: 'Icons', href: '/icons', icon: CalendarIcon, count: '20+' },
+  { name: 'Dashboard', href: '/', icon: HomeIcon },
+  { name: 'Icons', href: '/icons', icon: CalendarIcon },
   { name: 'MQTT', href: '/mqtt', icon: UsersIcon },
-  { name: 'Network', href: '/network', icon: FolderIcon, count: '12' },
+  { name: 'Network', href: '/network', icon: FolderIcon },
+  { name: 'Settings', href: '/settings', icon: FolderIcon },
 ]
 
 const externalLinks = [
-  { id: 3, name: 'Documentation', href: '#', initial: 'D' },
-  { id: 1, name: 'Community', href: '#', initial: 'C' },
-  { id: 2, name: 'Awtrix Flows', href: '#', initial: 'F' },
+  { name: 'Documentation', href: 'https://blueforcer.github.io/awtrix3/#/README', initial: 'D' },
+  { name: 'Community', href: 'https://discord.gg/cyBCpdx', initial: 'C' },
+  { name: 'Awtrix Flows', href: 'https://flows.blueforcer.de/', initial: 'F' },
 ]
 </script>
