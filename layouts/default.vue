@@ -6,7 +6,7 @@
         <div class="px-4 py-5 sm:p-6">
           <slot />
         </div>
-        <div class="bg-gray-50 px-4 py-4 sm:px-6" v-if="slots.bottom">
+        <div v-if="slots.bottom" class="bg-gray-50 px-4 py-4 sm:px-6">
           <slot name="bottom" />
         </div>
       </div>
